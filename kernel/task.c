@@ -44,14 +44,14 @@ void init_process_subsystem(void)
         process_table[iCnt] = NULL;
     }
     //set the tss descriptor
+
+
 }
 
 void fork(void)
 {
     
 }
-
-
 
 void *alloc_kernel_stack(void)
 {
@@ -96,7 +96,6 @@ void sched_init(void)
     tss.esp0 = (uint32_t)alloc_kernel_stack();
     tss.ss0  = KERNEL_DATA;
     tss.iopb = 0;
-
 
     printk("kernel stack points to %x\n", tss.esp0);
    

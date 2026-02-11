@@ -38,7 +38,8 @@ void list_add_tail(struct list_head *head, struct list_head *new)
 void list_del(struct list_head* entry)
 {
     generic_del(entry);
-    INIT_LIST_NULL(entry);
+    /* INIT_LIST_NULL(entry); */
+    INIT_LIST_HEAD(entry);
 }
 
 void list_del_init(struct list_head* entry)

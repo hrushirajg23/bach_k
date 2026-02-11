@@ -1471,11 +1471,6 @@ int mkdir(const char *pathname, int mode)
 {
 
     int fd;
-    /* struct inode *parent = namei(pathname, N_PARENT); */
-    /* if (!parent) { */
-    /*     printk("failed namei for path: %s\n", parent); */
-    /*     return -1; */
-    /* } */
     fd = sys_open(pathname, O_CREAT | O_DIR, 0);
     if (fd == -1) {
        printk("failed to open %s\n", pathname);

@@ -120,28 +120,28 @@ static inline struct buffer_head *unlocked_buffer(struct buffer_head *bh)
 struct buffer_head *getblk(unsigned short dev_no, unsigned long blocknr)
 {
     struct buffer_head *bh = NULL;
-    printk("inside getblk \n");
+    /* printk("inside getblk \n"); */
 
     while (1) {
         bh = search_hash(dev_no, blocknr);
         if (bh) {
-            printk("getblk hash found \n");
+            /* printk("getblk hash found \n"); */
             if (IS_FLAG(bh->flags, BH_lock)) { //scenario 5
                 //sleep
                 printk("getblk scenario 5\n");
                 continue;
             }
-            printk("getblk scenario 1\n");
+            /* printk("getblk scenario 1\n"); */
             list_del(&bh->b_free); //remove from the free list
             return locked_buffer(bh);
         }
         else { //block is not on hash queue
 
-            printk("block not on hash queue\n");
+            /* printk("block not on hash queue\n"); */
             if (list_is_empty(&buffer_cache.b_free)) { //scenario 4
                 //sleep till any buffer doesn't become free
                 printk("BUFFER LIST IS EMPTY ===========================\n");
-                printk("getblk scenario 4\n");
+                /* printk("getblk scenario 4\n"); */
                 continue; //to avoid race conditions 
             }
             /*
@@ -155,14 +155,14 @@ struct buffer_head *getblk(unsigned short dev_no, unsigned long blocknr)
                 //For async write ig we should use interrupt driven i/o
                 //put the write block in queue, it gets scheduled accordingly
                 //and raises an interrupt when completed
-                printk("getblk scenario 3\n");
+                /* printk("getblk scenario 3\n"); */
                 disk_write_blk(bh->b_blocknr, bh->b_data);
                 CLEAR_FLAG(bh->flags, BH_delay);
                 list_add(&buffer_cache.b_free, &bh->b_free);
                 continue; 
             }
 
-            printk("getblk scenario 2\n");
+            /* printk("getblk scenario 2\n"); */
 
             //scenario 2 -- found a free buffer, use it 
             //remove the buffer from the old hash queue
@@ -193,9 +193,11 @@ void brelse(struct buffer_head *bh)
     asm volatile ("cli");
 
     if ( !IS_FLAG(bh->flags, BH_dirty) && !IS_FLAG(bh->flags, BH_old)) {
+        /* buffer is valid and not old */
         list_add_tail(&buffer_cache.b_free, &bh->b_free);
     }
     else {
+        /* buffer is dirty */
         list_add(&buffer_cache.b_free, &bh->b_free);
     }
 
@@ -205,7 +207,7 @@ void brelse(struct buffer_head *bh)
 
 struct buffer_head *bread(unsigned short dev_no, unsigned long blocknr)
 {
-    printk("invoed bread for blocknr %d\n", blocknr);
+    /* printk("invoed bread for blocknr %d\n", blocknr); */
     struct buffer_head *bh = getblk(dev_no, blocknr);
     //check is buffer is valid
     
