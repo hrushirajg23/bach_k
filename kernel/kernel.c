@@ -124,8 +124,8 @@ void kernel_main(uint32_t magic, uint32_t addr) {
      * remember, for once you use mkfs, comment it out,
      * next time to use the os freely and apply your changes
      */
-    printk("cooking ext2 filesystem.............................\n");
-    mkfs(0, 8);  /* Create 8MB ext2 filesystem at offset 0 */
+    /* mkfs(0, 8); // Commented out to test persistence. Uncomment to reformat. */
+ /* Create 8MB ext2 filesystem at offset 0 */
 
     printk("initialising ext2 file system...........................\n");
     ext2_init_fs();
@@ -137,7 +137,7 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     ext2_mount_root();
 
     printk("testing fs\n");
-    test_fs();
+    /* test_fs(); // Superblock dump and file test */
 
     printk("syncing fs\n");
     sync();

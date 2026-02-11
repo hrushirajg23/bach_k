@@ -39,9 +39,15 @@ ext2_super_block super;
 
 
 int disk_read_blk(uint32_t block_num, uint8_t *buf) {
-    if (!fs_start_set) return 1;
+    if (!fs_start_set) {
+        printk("disk_read_blk: fs_start_set is 0! (block %u)\n", block_num);
+        return 1;
+    }
 
     uint32_t lba = filesys_start + block_num * SECTORS_PER_BLOCK;
+    
+    /* printk("R-BLK %u @ LBA %u (s_log_bs=%u)\n", 
+           block_num, lba, super.s_log_block_size); */
 
     for (int i = 0; i < SECTORS_PER_BLOCK; i++) {
         disk_read(lba + i, buf + DISK_SECTOR_SIZE * i);
@@ -56,6 +62,7 @@ int disk_write_blk(uint32_t block_num, uint8_t *buf) {
     for (int i = 0; i < SECTORS_PER_BLOCK; i++) {
         disk_write(lba + i, buf + DISK_SECTOR_SIZE * i, DISK_SECTOR_SIZE);
     }
+    return 0;
 }
 
 // TODO: replace disk_write_blk with disk_write_bn
@@ -66,6 +73,7 @@ int disk_write_bn(uint32_t block_num, uint8_t *buf, uint16_t len) {
     uint32_t lba = filesys_start + block_num * SECTORS_PER_BLOCK;
 
     disk_write(lba, buf, len);
+    return 0;
 }
 
 
@@ -101,28 +109,40 @@ uint32_t fs_start_to_lba_superblk(uint32_t mb_start) {
 void set_superblock() {
     // set superblock 
     ext2_super_block b;
-    if (disk_read_blk(2, (uint8_t *) &b)) {
-        printk("Failed to read superblock.\n");
-        sys_exit();
+    /* Superblock is at offset 1024. If block size is 1024, it's block 1. */
+    if (disk_read_blk(1, (uint8_t *) &b)) {
+        printk("set_superblock: Failed to read superblock LBA 2.\n");
+        return;
+    }
+
+    if (b.s_magic != EXT2_SUPER_MAGIC) {
+        printk("set_superblock: invalid magic 0x%x at Block 1 (LBA 2)\n", b.s_magic);
+        return;
     }
 
     super = b;
+    printk("set_superblock: loaded magic 0x%x, blocks_per_group=%u\n", 
+           super.s_magic, super.s_blocks_per_group);
 }
 
 void set_bgdt() {
     uint32_t bc = super.s_blocks_count;
     uint32_t bpg = super.s_blocks_per_group;
     
+    if (bpg == 0) {
+        printk("set_bgdt: s_blocks_per_group is 0! (bc=%u, magic=0x%x)\n", 
+               bc, super.s_magic);
+        return;
+    }
+    
     n_block_groups = bc / bpg;
     if (bc % bpg != 0) n_block_groups++;
 
 
+    /* BGDT follows the superblock. If block size is 1024, it's block 2. */
     uint32_t bgdt_start_blkno = 2;
     uint8_t buf[S_BLOCK_SIZE];
 
-    // the BGDT fits in 1 disk block 
-    // if we have < (1024 / 32) block groups
-    // (which we do)
     disk_read_blk(bgdt_start_blkno, buf);
 
     // copy into bgdt
@@ -173,8 +193,11 @@ inode_t get_inode(uint32_t inode_n) {
     }
 
     /* disk_read_blk(inode_blk_n, (uint8_t *) blk_nodes); */
+    
+    inode_t res = ((inode_t *)bh->b_data)[inode_blk_offset];
+    brelse(bh);
 
-    return *(inode_t *)(bh->b_data + inode_blk_offset);
+    return res;
 }
 
 
@@ -198,7 +221,7 @@ uint32_t indirect_block(inode_t file, uint32_t i) {
         bh = bread(DEV_NO, file.i_block[12]);
         uint16_t j = i - dir_blk_len;
         /* return blocks[j]; */
-        return *(uint32_t *)(bh->b_data + j);
+        return *(uint32_t*)(bh->b_data + j);
     }
 
     uint32_t dbl_ind_blk_len = S_BLOCK_SIZE * ind_blk_len;
@@ -377,6 +400,7 @@ int write_block_at(uint32_t block, uint16_t offset, uint8_t *chunk, uint16_t len
     bh = bread(DEV_NO, block);
     if (!bh) {
         printk("bread failed for block %u\n", block);
+        return -1; // Return error if bread fails
     }
 
     buf = (uint8_t*)bh->b_data;
@@ -389,6 +413,7 @@ int write_block_at(uint32_t block, uint16_t offset, uint8_t *chunk, uint16_t len
     // write it back
     /* disk_write_blk(block, buf); */
     bwrite(bh);
+    brelse(bh); // Release the buffer head
 
     return 0;
 }
@@ -956,7 +981,7 @@ void test_fs(void)
 {
     printk("testing fs\n");
     struct buffer_head *bh;
-    bh = bread(DEV_NO, 2);
+    bh = bread(DEV_NO, 1);
     if (!bh) {
         printk("failed reading buffer 1 for sb\n");
     }
@@ -969,7 +994,11 @@ void test_fs(void)
 
     brelse(bh);
 
-   
+    printk("Creating test file...\n");
+    create_test_file();
+    
+    printk("Reading back test file...\n");
+    print_file("test.txt");
 }
 
 void ext2_fs_init(void)
@@ -1030,7 +1059,7 @@ struct super_block *ext2_read_super(struct super_block *sb, void *data, int sile
     }
     
     /* Read superblock from disk */
-    bh = bread(DEV_NO, 2);  /* Superblock is at block 2 */
+    bh = bread(DEV_NO, 1);  /* Superblock is at block 1 (offset 1024) */
     if (!bh) {
         printk("ext2_read_super: failed to read superblock\n");
         kfree(sbi);
@@ -1045,6 +1074,12 @@ struct super_block *ext2_read_super(struct super_block *sb, void *data, int sile
         brelse(bh);
         kfree(sbi);
         return NULL;
+    }
+    
+    /* Register superblock with filesystem type */
+    struct file_system_type *fst = get_fs_type("ext2");
+    if (fst) {
+        list_add(&sb->s_list, &fst->fs_supers);
     }
     
     /* Copy superblock info to memory */
@@ -1142,6 +1177,9 @@ int ext2_init_fs(void)
         printk("ext2_init_fs: failed to register ext2 filesystem\\n");
         return -1;
     }
+    
+    /* Initialize dentry cache */
+    dcache_init();
     
     printk("ext2_init_fs: ext2 filesystem registered\\n");
     return 0;

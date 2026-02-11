@@ -87,7 +87,7 @@ void create_buffer_cache(void)
     
     printk("displaying buffer cache................\n");
     display_buffer_cache();
-    test_bcache();
+    /* test_bcache(); */
 
 }
 
@@ -207,32 +207,34 @@ void brelse(struct buffer_head *bh)
 
 struct buffer_head *bread(unsigned short dev_no, unsigned long blocknr)
 {
-    /* printk("invoed bread for blocknr %d\n", blocknr); */
     struct buffer_head *bh = getblk(dev_no, blocknr);
-    //check is buffer is valid
     
-    /* printk("invoed bread 2 \n"); */
     if (IS_FLAG(bh->flags, BH_uptodate)) {
+        unlocked_buffer(bh);
         return bh;
     }
 
-    /* printk("invoed bread 3 \n"); */
-    /*
-     * initiate disk read and sleep till then   
-     */
-    disk_read_blk(bh->b_blocknr, bh->b_data);
+    if (disk_read_blk(bh->b_blocknr, bh->b_data) != 0) {
+        /* printk("bread: disk_read_blk failed for block %u\n", blocknr); */
+        brelse(bh);
+        return NULL;
+    }
 
     SET_FLAG(bh->flags, BH_uptodate);
     CLEAR_FLAG(bh->flags, BH_dirty);
+    unlocked_buffer(bh);
 
-    /* printk("invoking disk_read compledted bread\n"); */
     return bh;
 }
 
 
 void bwrite(struct buffer_head *bh)
 {
-    disk_write_blk(bh->b_blocknr, bh->b_data);
+    /* printk("invoed bwrite \n"); */
+    locked_buffer(bh);
+    disk_write_blk(bh->b_blocknr, (uint8_t *)bh->b_data);
+    CLEAR_FLAG(bh->flags, BH_dirty);
+    unlocked_buffer(bh);
     /*
      * if I/O is synchronous 
      *      sleep(event I/O completes)

@@ -41,5 +41,6 @@ struct buffer_head *bread(unsigned short dev_no, unsigned long blocknr);
 void bwrite(struct buffer_head *bh);
 void brelse(struct buffer_head *bh);
 struct buffer_head *getblk(unsigned short dev_no, unsigned long blocknr);
+void create_buffer_cache(void);
 
 #endif

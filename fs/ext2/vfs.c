@@ -53,9 +53,9 @@ static struct inode *search_hash(unsigned short dev_no, unsigned long inum)
 
 void inode_init(struct inode *inode, unsigned short dev_no, unsigned long inum)
 {
-    INIT_LIST_NULL(&inode->i_hash);
-    INIT_LIST_NULL(&inode->i_sb_list);
-    INIT_LIST_NULL(&inode->i_dentry);
+    INIT_LIST_HEAD(&inode->i_hash);
+    INIT_LIST_HEAD(&inode->i_sb_list);
+    INIT_LIST_HEAD(&inode->i_dentry);
     inode->i_no = inum;
     inode->i_dev = dev_no;
     inode->i_count = 0;
@@ -148,6 +148,12 @@ struct inode *iget(unsigned short dev_no, unsigned int inum)
             if (inode->i_count == 0) { //inode is on free list
                 list_del(&inode->i_free);  
             }
+            
+            /* Ensure i_sb is set for cached inodes (e.g. pre-allocated ones) */
+            if (!inode->i_sb) {
+                inode->i_sb = get_super(dev_no);
+            }
+            
             inode->i_count++;
             return locked_inode(inode);
         }
@@ -156,16 +162,26 @@ struct inode *iget(unsigned short dev_no, unsigned int inum)
             return NULL;
         }
 
+        inode = list_first_entry(&i_cache.i_free, struct inode, i_free);
         list_del(&inode->i_free);
         inode->i_no = inum;
-        /* ino->dev_no = dev_no; */
+        inode->i_dev = dev_no;
+        
+        /* Find and set superblock for this device */
+        inode->i_sb = get_super(dev_no);
+        
         list_del(&inode->i_hash);
-        list_add(&i_cache.i_hash[hash_fn(dev_no, inode->i_no)], &inode->i_hash); 
+        list_add(&i_cache.i_hash[hash_fn(inode->i_no, dev_no)], &inode->i_hash); 
+        
         //read inode from disk via bread at core 
-        /* ext2_read_inode(inode); */ 
-        inode->i_sb->s_op->read_inode(inode);
+        if (inode->i_sb && inode->i_sb->s_op && inode->i_sb->s_op->read_inode) {
+            inode->i_sb->s_op->read_inode(inode);
+        } else {
+            /* Fallback or warning */
+            printk("iget: no superblock or read_inode for dev %d\n", dev_no);
+        }
+        
         inode->i_count++; 
-
         return locked_inode(inode);
     }
     return NULL;

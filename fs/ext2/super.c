@@ -148,7 +148,23 @@ void destroy_super(struct super_block *sb)
 /* Get superblock for device */
 struct super_block *get_super(unsigned char dev)
 {
-    /* Simplified - in a real implementation, we'd search a list of mounted superblocks */
-    /* For now, we'll return NULL and let the caller create a new one */
+    struct list_head *p, *q;
+    struct file_system_type *fs;
+    struct super_block *sb;
+    
+    if (!fs_list_initialized) {
+        return NULL;
+    }
+    
+    list_for_each(p, &file_systems) {
+        fs = list_entry(p, struct file_system_type, fs_list);
+        list_for_each(q, &fs->fs_supers) {
+            sb = list_entry(q, struct super_block, s_list);
+            if (sb->s_dev == dev) {
+                return sb;
+            }
+        }
+    }
+    
     return NULL;
 }
