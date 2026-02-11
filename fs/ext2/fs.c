@@ -175,11 +175,15 @@ inode_t get_inode(uint32_t inode_n) {
 
     uint32_t inode_table_blkn = bgdt[bgdt_n].bg_inode_table;
 
-    // each 1024-byte block evenly fits 8 inodes (128 bytes each)
-    uint16_t inodes_per_blk = S_BLOCK_SIZE / sizeof(inode_t);
+    // Support dynamic inode size from superblock
+    uint16_t inode_size = (super.s_rev_level > 0) ? super.s_inode_size : 128;
+    if (inode_size == 0) inode_size = 128; 
+
+    uint16_t inodes_per_blk = S_BLOCK_SIZE / inode_size;
 
     uint16_t inode_blk_n = inode_table_blkn + inode_offset / inodes_per_blk;
-    uint16_t inode_blk_offset = inode_offset % inodes_per_blk;
+    uint16_t inode_blk_offset_idx = inode_offset % inodes_per_blk;
+    uint16_t byte_offset_in_blk = inode_blk_offset_idx * inode_size;
 
     struct buffer_head *bh;
 
@@ -194,7 +198,7 @@ inode_t get_inode(uint32_t inode_n) {
 
     /* disk_read_blk(inode_blk_n, (uint8_t *) blk_nodes); */
     
-    inode_t res = ((inode_t *)bh->b_data)[inode_blk_offset];
+    inode_t res = *(inode_t *)((uint8_t *)bh->b_data + byte_offset_in_blk);
     brelse(bh);
 
     return res;
@@ -977,6 +981,41 @@ void write_sb(struct ext2_sb_info *ext2_sb)
     brelse(bh);
 }
 
+void ls_root(void)
+{
+    printk("Listing root directory...\n");
+    inode_t root_inode = get_inode(EXT2_ROOT_INO);
+    uint32_t block_n = root_inode.i_block[0];
+    struct buffer_head *bh = bread(DEV_NO, block_n);
+    if (!bh) {
+        printk("ls_root: failed to read root block %d\n", block_n);
+        return;
+    }
+
+    uint32_t pos = 0;
+    while (pos < S_BLOCK_SIZE) {
+        /* Standard ext2 dentry: 4b inum, 2b rec_len, 1b name_len, 1b file_type, name... */
+        uint32_t ino = *(uint32_t *)((uint8_t *)bh->b_data + pos);
+        uint16_t rec_len = *(uint16_t *)((uint8_t *)bh->b_data + pos + 4);
+        uint8_t name_len = *(uint8_t *)((uint8_t *)bh->b_data + pos + 6);
+        uint8_t file_type = *(uint8_t *)((uint8_t *)bh->b_data + pos + 7);
+        char *name_ptr = (char *)((uint8_t *)bh->b_data + pos + 8);
+
+        if (ino != 0) {
+            char name[256];
+            int len = (name_len > 255) ? 255 : name_len;
+            memcpy(name, name_ptr, len);
+            name[len] = '\0';
+
+            printk("  [ino:%d] type:%d rlen:%d name:%s\n", ino, file_type, rec_len, name);
+        }
+
+        if (rec_len == 0 || pos + rec_len > S_BLOCK_SIZE) break;
+        pos += rec_len;
+    }
+    brelse(bh);
+}
+
 void test_fs(void)
 {
     printk("testing fs\n");
@@ -984,21 +1023,17 @@ void test_fs(void)
     bh = bread(DEV_NO, 1);
     if (!bh) {
         printk("failed reading buffer 1 for sb\n");
+        return;
     }
     ext2_super_block *sb = (ext2_super_block*)bh->b_data;
-    /* ext2_super_block sb; */
-    /* uint8_t sb_buffer[EXT2_BLK_SIZE]; */
-    /* disk_read(2, sb_buffer); */
-    /* memcpy(&sb, sb_buffer, sizeof(ext2_super_block)); */
     display_ext2_super_block(sb);
+    
+    uint16_t inode_size = (sb->s_rev_level > 0) ? sb->s_inode_size : 128;
+    printk("Superblock Inode Size: %d\n", inode_size);
 
     brelse(bh);
 
-    printk("Creating test file...\n");
-    create_test_file();
-    
-    printk("Reading back test file...\n");
-    print_file("test.txt");
+    ls_root();
 }
 
 void ext2_fs_init(void)
