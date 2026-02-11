@@ -6,6 +6,7 @@
 #include "vfs.h"
 #include "list.h"
 #include "kernel.h"
+#include "buffer.h"
 #include <stdint.h>
 
 #define INODES 30

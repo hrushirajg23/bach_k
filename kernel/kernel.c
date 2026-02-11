@@ -32,10 +32,9 @@
 #include "mm.h"
 #include "task.h"
 #include "disk.h"
-/* #include "fs.h" */
+#include "fs.h"
 #include "string.h"
 /* #include "vfs.h" */
-#include "ufs.h"
 #include "buffer.h"
 
 #if defined(__linux__)
@@ -121,21 +120,21 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     create_buffer_cache();
 
     /*
-     * CAUTION: the erases the whole existing file system
-     * remember , for once, you use mkufs, comment it out ,
+     * CAUTION: this erases the whole existing file system
+     * remember, for once you use mkfs, comment it out,
      * next time to use the os freely and apply your changes
      */
-    printk("cooking ritchie's unix file system............................\n");
-    /* mkufs(8); */
+    printk("cooking ext2 filesystem.............................\n");
+    mkfs(0, 8);  /* Create 8MB ext2 filesystem at offset 0 */
 
-    printk("initialising unix file system...........................\n");
-    init_fs();
+    printk("initialising ext2 file system...........................\n");
+    ext2_init_fs();
 
     printk("initializing inode cache \n");
     create_inode_cache();
         
     printk("mounting rootfs.........\n");
-    mount_rootfs();
+    ext2_mount_root();
 
     printk("testing fs\n");
     test_fs();

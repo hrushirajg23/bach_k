@@ -12,6 +12,8 @@
 #include "vfs.h"
 #include "dcache.h"
 #include "ext2_balloc.h"
+#include "task.h"
+#include "buffer.h"
 
 #define KLOG(fmt, ...) printk("[ext2] " fmt "\n", ##__VA_ARGS__)
 
@@ -21,6 +23,8 @@
 
 #define SUPERBLOCK_OFFSET   SECTORS_PER_BLOCK
 
+/* External references */
+extern struct task_struct *current;
 
 // TODO: maybe...move this into the "disk" section?
 // in general, how to handle disk partitions.
@@ -1126,4 +1130,105 @@ struct file_system_type ext2_fs_type = {
 int ext2_register_filesystem(void)
 {
     return register_filesystem(&ext2_fs_type);
+}
+
+/* Initialize ext2 filesystem structures */
+int ext2_init_fs(void)
+{
+    printk("ext2_init_fs: initializing ext2 filesystem\\n");
+    
+    /* Register ext2 filesystem type */
+    if (ext2_register_filesystem() != 0) {
+        printk("ext2_init_fs: failed to register ext2 filesystem\\n");
+        return -1;
+    }
+    
+    printk("ext2_init_fs: ext2 filesystem registered\\n");
+    return 0;
+}
+
+/* Mount root filesystem */
+int ext2_mount_root(void)
+{
+    struct super_block *sb;
+    struct inode *root_inode;
+    
+    printk("ext2_mount_root: mounting ext2 root filesystem\\n");
+    
+    /* Read filesystem metadata */
+    read_fs(0);  /* 0 MB offset */
+    
+    /* Allocate superblock */
+    sb = alloc_super();
+    if (!sb) {
+        printk("ext2_mount_root: failed to allocate superblock\\n");
+        return -1;
+    }
+    
+    /* Fill superblock by reading from disk */
+    if (!ext2_read_super(sb, NULL, 0)) {
+        printk("ext2_mount_root: failed to read superblock\\n");
+        destroy_super(sb);
+        return -1;
+    }
+    
+    /* Get root inode */
+    root_inode = sb->s_root->d_inode;
+    if (!root_inode) {
+        printk("ext2_mount_root: failed to get root inode\\n");
+        destroy_super(sb);
+        return -1;
+    }
+    
+    /* Set current process root and pwd */
+    if (current) {
+        current->root = root_inode;
+        current->pwd = root_inode;
+        root_inode->i_count += 2;  /* Two references */
+    }
+    
+    printk("ext2_mount_root: root filesystem mounted successfully\\n");
+    printk("ext2_mount_root: root inode = %u, size = %u\\n", 
+           root_inode->i_no, root_inode->i_size);
+    
+    /* Display root directory contents */
+    if (root_inode->i_size > 0) {
+        printk("ext2_mount_root: root directory contents:\\n");
+        
+        /* Read first block of root directory */
+        inode_t disk_inode = get_inode(EXT2_ROOT_INO);
+        if (disk_inode.i_blocks > 0) {
+            uint32_t dir_block = disk_inode.i_block[0];
+            struct buffer_head *bh = bread(DEV_NO, dir_block);
+            if (bh) {
+                dentry_t *entries = (dentry_t *)bh->b_data;
+                uint32_t num_entries = disk_inode.i_size / sizeof(dentry_t);
+                
+                for (uint32_t i = 0; i < num_entries && i < 10; i++) {
+                    if (entries[i].inode != 0) {
+                        printk("  entry %u: inode=%u, name='%s', type=%u\\n",
+                               i, entries[i].inode, entries[i].name, entries[i].file_type);
+                    }
+                }
+                brelse(bh);
+            }
+        }
+    }
+    
+    return 0;
+}
+
+/* Sync filesystem - flush dirty buffers and metadata to disk */
+void sync(void)
+{
+    printk("sync: flushing filesystem to disk\n");
+    
+    /* Write superblock */
+    disk_sync_super();
+    
+    /* Write block group descriptor table */
+    disk_sync_bgdt();
+    
+    /* TODO: Flush all dirty inodes and buffer cache */
+    printk("sync: filesystem synced\n");
 }

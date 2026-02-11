@@ -24,7 +24,7 @@ SRC_DIRS := \
     kernel \
     memory-management \
     drivers \
-	fs/ufs \
+	fs/ext2 \
 	fs \
     kernel/gdt \
     kernel/idt \

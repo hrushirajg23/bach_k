@@ -1,7 +1,9 @@
 #ifndef _BUFFER_H
 #define _BUFFER_H
 
-#include "ufs.h"
+#include "list.h"
+#include "vfs.h"
+#include "fs.h"
 
 #define hash_fn(bno, devno) (bno % devno)
 
