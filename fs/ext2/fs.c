@@ -578,36 +578,75 @@ int create_test_file() {
 }
 
 // print file in root directory. 
-// this is just a test.
-void print_file(const char *fn) {
-    ext2_file_handle root = get_root_dir();
-    // read from directory
-    uint32_t data_block_n = root.inode.i_block[0];
-
-    uint8_t buf[S_BLOCK_SIZE];
-    disk_read_blk(data_block_n, (uint8_t *) buf);
-
-    dentry_t *d = (dentry_t *) buf;
-
-    if(!strcmp((const char *) d->name, fn)) {
-        // this is the entry we want!
-
-        // get the inode
-        uint32_t inode_n = d->inode;
-        inode_t ind = get_inode(inode_n);
-
-        data_block_n = ind.i_block[0];
-        uint8_t bufb[S_BLOCK_SIZE];
-
-        // should be...
-        disk_read_blk(data_block_n, (uint8_t *) bufb);
-    
-        uint8_t fdata[ind.i_size];
-        for (int i = 0; i < ind.i_size; i++) {
-            fdata[i] = bufb[i];
-        }
-        printk((char *) fdata);
+void cat_file(const char *fn) {
+    printk("cat_file: reading '%s'\n", fn);
+    inode_t root_inode = get_inode(EXT2_ROOT_INO);
+    uint32_t block_n = root_inode.i_block[0];
+    struct buffer_head *bh_dir = bread(DEV_NO, block_n);
+    if (!bh_dir) {
+        printk("cat_file: failed to read root directory block\n");
+        return;
     }
+
+    uint32_t pos = 0;
+    uint32_t target_ino = 0;
+    while (pos < S_BLOCK_SIZE) {
+        uint32_t ino = *(uint32_t *)((uint8_t *)bh_dir->b_data + pos);
+        uint16_t rec_len = *(uint16_t *)((uint8_t *)bh_dir->b_data + pos + 4);
+        uint8_t name_len = *(uint8_t *)((uint8_t *)bh_dir->b_data + pos + 6);
+        char *name_ptr = (char *)((uint8_t *)bh_dir->b_data + pos + 8);
+
+        if (ino != 0) {
+            char name[256];
+            int len = (name_len > 255) ? 255 : name_len;
+            memcpy(name, name_ptr, len);
+            name[len] = '\0';
+
+            if (strcmp(name, fn) == 0) {
+                target_ino = ino;
+                break;
+            }
+        }
+        if (rec_len == 0 || pos + rec_len > S_BLOCK_SIZE) break;
+        pos += rec_len;
+    }
+    brelse(bh_dir);
+
+    if (target_ino == 0) {
+        printk("cat_file: file '%s' not found\n", fn);
+        return;
+    }
+
+    inode_t inode = get_inode(target_ino);
+    printk("cat_file: found '%s' (ino:%d, size:%d)\n", fn, target_ino, inode.i_size);
+
+    uint32_t bytes_left = inode.i_size;
+    for (int i = 0; i < 12 && bytes_left > 0; i++) {
+        uint32_t blk = inode.i_block[i];
+        if (blk == 0) break;
+
+        struct buffer_head *bh_data = bread(DEV_NO, blk);
+        if (!bh_data) break;
+
+        uint32_t to_read = (bytes_left > S_BLOCK_SIZE) ? S_BLOCK_SIZE : bytes_left;
+        
+        // Print content (limited to printable chars for safety)
+        for (uint32_t j = 0; j < to_read; j++) {
+            char c = bh_data->b_data[j];
+            if (c >= 32 && c <= 126) {
+                printk("%c", c);
+            } else if (c == '\n' || c == '\r' || c == '\t') {
+                printk("%c", c);
+            } else {
+                // print as hex or dot for binary
+                // printk(".");
+            }
+        }
+        
+        brelse(bh_data);
+        bytes_left -= to_read;
+    }
+    printk("\n--- end of file ---\n");
 }
 
 int create_root_directory() {
@@ -1007,7 +1046,8 @@ void ls_root(void)
             memcpy(name, name_ptr, len);
             name[len] = '\0';
 
-            printk("  [ino:%d] type:%d rlen:%d name:%s\n", ino, file_type, rec_len, name);
+            inode_t ind = get_inode(ino);
+            printk("  [ino:%d] type:%d size:%d name:%s\n", ino, file_type, ind.i_size, name);
         }
 
         if (rec_len == 0 || pos + rec_len > S_BLOCK_SIZE) break;
@@ -1034,6 +1074,9 @@ void test_fs(void)
     brelse(bh);
 
     ls_root();
+
+    cat_file("hello.c");
+    cat_file("app");
 }
 
 void ext2_fs_init(void)
