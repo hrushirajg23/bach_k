@@ -3,9 +3,28 @@
 
 #include "list.h"
 #include "vfs.h"
-// #include "vfs.h"
 
-#define NR_TASKS 10
+/* Process state transitions, chapter 6 ,
+ * This describes a human's life
+ * starting with forked 8
+ * the child is created in mother's womb
+ * whatever te mother eats goes into child (address space)
+ * mother and child are tied with the umbilical knot
+ * when user(child) calls exec, the tied knot is cut between
+ * mother and child, signifying that child was born for his own karm.
+ */
+//1 and 2 are of no use, just modes
+#define USER_RUNNING 1
+#define KERNEL_RUNNING 2
+#define READY_TO_RUN_M 3 //ready to run in memory
+#define ASLEEP_M 4//asleep in memory
+#define READ_TO_RUN_S 5// read to run but swapped
+#define ASLEEP_S 6//asleep and swapped
+#define PREEMPTED 7 //preempted while returning to user mode
+#define FORKED 8 //just created
+#define ZOMBIE 9 //zombie bro
+
+#define NR_TASKS 32
 typedef int (*fn_ptr)();
 
 struct i387_struct {
@@ -21,7 +40,9 @@ struct i387_struct {
 
 struct tss_struct {
     uint32_t back_link; //16bits long 
-    uint32_t esp0;  //kernel stack pointer
+    uint32_t esp0;  //kernel stack pointer and only used when mode 3 to 0 takes place,
+                    //hence it doesn;t have the current track of stack pointer in kernel
+                    //mode
     uint32_t ss0;  //16bits , kernel stack segment
     uint32_t esp1; 
     uint32_t ss1; //16bits
@@ -84,11 +105,46 @@ struct pprt {
     unsigned char p_stack;
     struct region *ptr_stack;
  };
+/*
+ * kernel stack process
+ * Each process will have :
+ * a kernel stack pointer , 
+    When switching:
+    mov esp, next->kernel_stack_top
+    And before returning to user mode:
+
+    Update TSS.esp0 to:
+    current->esp
+
+    TSS madhe jo esp ahe , tyachakade current esp cha count nasto
+    so context switch karaycha adhi, update it to current to current esp
+    so apan jevha ya process madhe parat yeu tevha tss cha esp previously save kelela milel.
+
+    Eg.
+    Process A
+    current->tss.esp = 8000
+    current->esp = 8000
+    .....
+    ... blah blah operations
+    now we need to switch, so save the esp values
+    noew esp is = 8192
+    current->esp = esp;
+    current->tss.esp = current->esp;
+
+    Process B.... Process C...
+
+    Context switched back to process A
+    current->tss.esp = 8192
+    current->esp = 8192
+*/
 
 struct task_struct {
+    unsigned long esp;
     long state; 
     long priority;
+    unsigned int counter; //the time unit for process scheduling
     long signal; //signals sent to the process but not yet handled
+    char sighandle; //signal marked by issig to be handled by psic
     fn_ptr sig_restorer;
     fn_ptr sig_fn[32];
     
@@ -113,12 +169,15 @@ struct task_struct {
 
 	// struct desc_struct ldt[3];
 /* tss for this task */
-	// struct tss_struct tss;
+	struct tss_struct tss;
 };
+
 #define INIT_TASK { \
     .state = 0, \
     .priority = 15, \
+    .counter = 0,\
     .signal = 0, \
+    .sighandle = 0, \
     .sig_restorer = NULL, \
     .sig_fn = { [0 ... 31] = NULL }, \
     .exit_code = 0, \
@@ -136,13 +195,9 @@ struct task_struct {
     .pwd = NULL, \
     .root = NULL, \
     .filp = 0, \
-    .first_free_filp = 0 \
+    .first_free_filp = 0, \
+    .tss = {0, } \
 }
-
-// /* fs info */	-1,0133,NULL,NULL,0, \
-// /* filp */	{NULL,}, \
-// 	{ \
-// 		{0,0}, \
 
 #define PRIORITIES 5
 struct prio_array_t {
@@ -157,5 +212,10 @@ struct prio_array_t {
     
 void tss_load(int offset);
 void sched_init(void);
+void do_exit(int signal);
+void handle_sig(void);
+void schedule(void);
+int kernel_thread(int (*fn)(void *), void *arg);
+
 
 #endif
