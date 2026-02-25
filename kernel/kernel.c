@@ -20,7 +20,6 @@
 
 #include "gdt.h"
 #include "idt.h"
-#include "irq.h"
 #include "kernel.h"
 #include "manager.h"
 #include "multiboot.h"
@@ -36,6 +35,7 @@
 #include "string.h"
 /* #include "vfs.h" */
 #include "buffer.h"
+#include "time.h"
 
 #if defined(__linux__)
 #error                                                                         \
@@ -48,6 +48,16 @@
 
 
 
+int test_thread(void *arg) {
+    int id = (int)arg;
+    int count = 0;
+    asm volatile("sti");  /* re-enable interrupts: context_switch enters here with IF=0 */
+    while(1) {
+        printk("[sched] Task %d is running (iteration %d)\n", id, count++);
+        for(volatile int i = 0; i < 5000000; i++);
+    }
+    return 0;
+}
 
 /* Main kernel entry point */
 void kernel_main(uint32_t magic, uint32_t addr) {
@@ -88,6 +98,8 @@ void kernel_main(uint32_t magic, uint32_t addr) {
 
     init_mem(mbi);
 
+    time_init();
+
     printk("\nGDT init...\n");
     gdt_initialize();
 
@@ -102,14 +114,17 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     /* setup_idt(); */
     trap_init();
 
-    printk("Install timer & keyboard drivers..\n");
-    install_handlers();
+    /* printk("Install timer & keyboard drivers..\n"); */
+    /* install_handlers(); */
 
     printk("PIT init...\n");
     init_timer(FREQUENCY);
 
     printk("IDT init...\n");
     initialize_idt();
+
+    /* Enable interrupts globally - without this the timer NEVER fires */
+    asm volatile("sti");
 
     printk("Boot complete.\n");
 
@@ -146,8 +161,6 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     terminal_writestring("Hello, Welcome To Yega Kernel!\n");
 
     printk("booted..................\n");
-
-
 
     while (1) {
         asm volatile("hlt");
