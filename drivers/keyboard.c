@@ -47,7 +47,7 @@ unsigned char kbdus[128] = {
     0, /* All other keys are undefined */
 };
 
-void keyboard_driver(registers_t *regs) {
+void keyboard_driver(void) {
   uint8_t scancode = inb(KEY_DATA_REG);
   char key = kbdus[(int)scancode];
 
