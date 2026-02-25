@@ -5,6 +5,7 @@
 #include "slab.h"
 #include "time.h"
 #include "signal.h"
+#include "timer.h"
 
 #define KERNEL_DATA 0x10
 #define KSTACK_ORDER 1   // 8KB stack

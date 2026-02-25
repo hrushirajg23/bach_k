@@ -1,8 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include "registers.h"
-
-void timer_driver(registers_t *regs);
+#define TIME_QUANTUM 10
+void timer_intr(void);
 
 #endif
