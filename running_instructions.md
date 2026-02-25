@@ -18,3 +18,6 @@ qemu-system-i386 \
   -d guest_errors \
   -serial stdio
 
+For mount the file system
+
+sudo mount -t ext2 -o loop disk.img /mnt

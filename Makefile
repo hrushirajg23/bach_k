@@ -40,6 +40,7 @@ SRC_DIRS := \
 # Find all .c and .asm files in source directories
 C_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 ASM_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.asm))
+S_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.S))
 
 # === Object Files ===
 # Flatten paths but keep distinct names:
@@ -47,13 +48,15 @@ ASM_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.asm))
 # bar.asm -> build/bar_asm.o  (Prevents collisions like idt.c vs idt.asm)
 C_OBJS := $(patsubst %.c,$(BUILD_DIR)/%.o,$(notdir $(C_SRCS)))
 ASM_OBJS := $(patsubst %.asm,$(BUILD_DIR)/%_asm.o,$(notdir $(ASM_SRCS)))
+S_OBJS := $(patsubst %.S,$(BUILD_DIR)/%_s.o,$(notdir $(S_SRCS)))
 
-OBJS := $(ASM_OBJS) $(C_OBJS)
+OBJS := $(ASM_OBJS) $(C_OBJS) $(S_OBJS)
 
 # === VPATH ===
 # Tell make where to look for source files
 vpath %.c $(SRC_DIRS)
 vpath %.asm $(SRC_DIRS)
+vpath %.S $(SRC_DIRS)
 
 # === Targets ===
 .PHONY: all clean run debug
@@ -77,9 +80,13 @@ $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 $(BUILD_DIR)/%_asm.o: %.asm | $(BUILD_DIR)
 	$(AS) $(ASFLAGS) $< -o $@
 
+# Assemble .S files
+$(BUILD_DIR)/%_s.o: %.S | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
 # Link Kernel
 $(BUILD_DIR)/yegaos.elf: $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(CFLAGS) $^ -lgcc
+	$(CC) $(LDFLAGS) -o $@ $(CFLAGS) $^
 	@echo "[OK] Linked ELF binary"
 
 # Create Binary
