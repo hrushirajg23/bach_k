@@ -13,6 +13,9 @@
 #include "idt.h"
 #include "serial.h"
 #include "task.h"
+#include "time.h"
+#include "keyboard.h"
+#include "timer.h"
 
 
 #define IDT_MAX_DESCRIPTORS 256
@@ -27,8 +30,8 @@
 
 __attribute__((aligned(0x10))) static idt_entry_t idt[IDT_MAX_DESCRIPTORS];
 static idtr_t idtr;
-extern void (*isr_stub_table[IDT_MAX_DESCRIPTORS])(void);
-extern void (*irq_stub_table[IDT_MAX_DESCRIPTORS])(void);
+/* extern void (*isr_stub_table[IDT_MAX_DESCRIPTORS])(void); */
+/* extern void (*irq_stub_table[IDT_MAX_DESCRIPTORS])(void); */
 
 /** Load the IDT and enable interrupts */
 static void load_idt(idtr_t *idt_descriptor) {
@@ -53,9 +56,6 @@ void general_protection(void);
 void page_fault(void);
 void coprocessor_error(void);
 void reserved(void);
-
-
-
 
 static inline void set_gate(
     idt_entry_t *gate,
@@ -213,6 +213,8 @@ void trap_init(void)
 	set_trap_gate(16,&coprocessor_error);
 	for (i=17;i<32;i++)
 		set_trap_gate(i,&reserved);
+    set_intr_gate(32, &timer_intr);
+    set_intr_gate(33, &keyboard_driver);
 }
 
 
