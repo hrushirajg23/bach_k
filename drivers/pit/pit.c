@@ -32,8 +32,15 @@
 void init_timer(int frequency) {
   uint16_t divisor = 1193180 / frequency;
 
+  /* bit 7 to 6 are for channel
+   * bit 5 to 4 are for access mode
+   * bit 3 to 1 are for operating mode 
+   * bit 0: 0 = 16 bit binary  , 1 = four-digit bcd
+   * currently apan channel 0 use karnar ahot , scheduling sathi lagel
+   * easy
+   */
   uint8_t command = (CHANNEL0 << 6) | (ACCESS_LSB_MSB << 4) |
-                    (MODE_SQUARE_WAVE_GENERATOR << 1) | BINARY_MODE;
+                    (MODE_RATE_GENERATOR << 1) | BINARY_MODE;
 
   outb(PIT_COMMAND_REG, command);
   io_wait();
