@@ -33,18 +33,14 @@ void *alloc_kernel_stack(void)
 
 extern void context_switch(struct task_struct *prev, struct task_struct *next);
 
-static inline void switch_to(struct task_struct *next)
+static inline void context_switch(struct task_struct *prev,
+                                   struct task_struct *next)
 {
-    
     printk("from current : %d, switching to %d\n", current->pid, next->pid);
     if (next == current)
         return;
-    struct task_struct *prev = current;
     current = next;
-
-    cpu_tss.esp0 = next->esp;
-
-    context_switch(prev, next);
+    switch_to(prev, next, prev); 
 }
 
 /*
@@ -129,7 +125,7 @@ void sched_init(void)
 
     void *stack_top = alloc_kernel_stack();
 
-    init->esp = (unsigned long)stack_top;
+    init->thread.esp = (unsigned long)stack_top;
     init->state = READY_TO_RUN_M;
     init->priority = 1;
     init->counter = TIME_QUANTUM;
@@ -138,10 +134,10 @@ void sched_init(void)
     process_table[0] = init;
     current = init;
 
-    cpu_tss.esp0 = (uint32_t)stack_top;
-    cpu_tss.ss0  = KERNEL_DATA;
+    init->thread.esp0 = (unsigned long)stack_top;
+    init->thread.ss0  = KERNEL_DATA;
 
-    printk("kernel stack points to %x\n", cpu_tss.esp0);
+    printk("kernel stack points to %x\n", init->thread.esp0);
    
 
 }

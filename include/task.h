@@ -105,6 +105,17 @@ struct pprt {
     unsigned char p_stack;
     struct region *ptr_stack;
  };
+
+struct thread_struct {
+    unsigned long esp0; //similar to TSS.esp0 , points to top of stack
+    unsigned long esp; //saved on switch 
+    uint32_t ss0;
+    unsigned long eip;
+    unsigned long fs;
+    unsigned long gs;
+    unsigned long iopl;
+    struct i387_struct i387;
+};
 /*
  * kernel stack process
  * Each process will have :
@@ -139,7 +150,7 @@ struct pprt {
 */
 
 struct task_struct {
-    unsigned long esp;
+    struct thread_struct thread;
     long state; 
     long priority;
     unsigned int counter; //the time unit for process scheduling
@@ -168,36 +179,33 @@ struct task_struct {
 /* ldt for this task 0 - zero 1 - cs 2 - ds&ss */
 
 	// struct desc_struct ldt[3];
-/* tss for this task */
-	struct tss_struct tss;
 };
 
-#define INIT_TASK { \
-    .state = 0, \
-    .priority = 15, \
-    .counter = 0,\
-    .signal = 0, \
-    .sighandle = 0, \
-    .sig_restorer = NULL, \
-    .sig_fn = { [0 ... 31] = NULL }, \
-    .exit_code = 0, \
-    .pprt = { 0 }, \
-    .pid = 0, \
-    .father = -1, \
-    .pgrp = 0, \
-    .session = 0, \
-    .leader = 0, \
-    .uid = 0, .euid = 0, .suid = 0, \
-    .gid = 0, .egid = 0, .sgid = 0, \
-    .alarm = 0, \
-    .utime = 0, .stime = 0, .cutime = 0, .cstime = 0, .start_time = 0, \
-    .used_math = 0,\
-    .pwd = NULL, \
-    .root = NULL, \
-    .filp = 0, \
-    .first_free_filp = 0, \
-    .tss = {0, } \
-}
+// #define INIT_TASK { \
+//     .state = 0, \
+//     .priority = 15, \
+//     .counter = 0,\
+//     .signal = 0, \
+//     .sighandle = 0, \
+//     .sig_restorer = NULL, \
+//     .sig_fn = { [0 ... 31] = NULL }, \
+//     .exit_code = 0, \
+//     .pprt = { 0 }, \
+//     .pid = 0, \
+//     .father = -1, \
+//     .pgrp = 0, \
+//     .session = 0, \
+//     .leader = 0, \
+//     .uid = 0, .euid = 0, .suid = 0, \
+//     .gid = 0, .egid = 0, .sgid = 0, \
+//     .alarm = 0, \
+//     .utime = 0, .stime = 0, .cutime = 0, .cstime = 0, .start_time = 0, \
+//     .used_math = 0,\
+//     .pwd = NULL, \
+//     .root = NULL, \
+//     .filp = 0, \
+//     .first_free_filp = 0, \
+// }
 
 #define PRIORITIES 5
 struct prio_array_t {
