@@ -30,8 +30,6 @@
 
 __attribute__((aligned(0x10))) static idt_entry_t idt[IDT_MAX_DESCRIPTORS];
 static idtr_t idtr;
-/* extern void (*isr_stub_table[IDT_MAX_DESCRIPTORS])(void); */
-/* extern void (*irq_stub_table[IDT_MAX_DESCRIPTORS])(void); */
 
 /** Load the IDT and enable interrupts */
 static void load_idt(idtr_t *idt_descriptor) {
