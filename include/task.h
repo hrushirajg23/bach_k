@@ -24,7 +24,8 @@
 #define FORKED 8 //just created
 #define ZOMBIE 9 //zombie bro
 
-#define NR_TASKS 32
+#define NR_TASKS      32
+#define TIME_QUANTUM  20    /* timer ticks before preemption */
 typedef int (*fn_ptr)();
 
 struct i387_struct {
@@ -151,6 +152,7 @@ struct thread_struct {
 
 struct task_struct {
     struct thread_struct thread;
+    unsigned long *stack; //points to the stack  of this task
     long state; 
     long priority;
     unsigned int counter; //the time unit for process scheduling
@@ -176,10 +178,59 @@ struct task_struct {
 	// unsigned long close_on_exec;
 	struct file * filp[NR_OPEN];
     int first_free_filp; //file free filp entry to save time
-/* ldt for this task 0 - zero 1 - cs 2 - ds&ss */
 
-	// struct desc_struct ldt[3];
 };
+
+struct thread_info {
+    struct task_struct *task;
+    unsigned int flags;
+};
+
+/*
+ * instrad of thread_info we'll be using 
+ * task_struct directly
+ */
+#define STACK_SIZE 8192
+#define THREAD_SIZE STACK_SIZE
+#define current_task() \
+    ((struct thread_info*)(esp & ~(STACK_SIZE - 1)))
+/*
+ * Kernel stack layout (8KB per thread)
+ *
+ * Stack size = 8192 bytes (8KB)
+ *
+ * Example memory layout:
+ *
+ *   0xC0400000  <- High address (top of kernel stack)
+ *        |
+ *        |  Stack grows downward
+ *        V
+ *   0xC03FE000  <= Base of stack page (thread_info lives here)
+ *
+ * So:
+ *   thead_info = 0xC03FE000
+ *   stack_top   = 0xC0400000
+ *
+ * If at some point:
+ *
+ *   %esp = 0xC03FF800
+ *
+ * We can compute task_struct using masking:
+ *
+ *   thread_info = esp & ~(8192 - 1)
+ *               = esp & ~0x1FFF
+ *               = esp & 0xFFFFE000
+ *
+ * Why this works:
+ *
+ *   - 8192 bytes = 2^13
+ *   - So lower 13 bits represent offset inside the stack
+ *   - Masking them out gives the page-aligned base address
+ *   - That base address is exactly where thread_info resides
+ *
+ * This allows O(1) retrieval of current thread_info
+ * directly from the stack pointer.
+ */
 
 // #define INIT_TASK { \
 //     .state = 0, \
@@ -207,6 +258,43 @@ struct task_struct {
 //     .first_free_filp = 0, \
 // }
 
+
+/* this struct defines the way the registers are stored on the
+   stack during a system call. */
+
+/*
+ pt_regs structure on the Kernel Mode (exception) stack contain-
+ing the registers saved right after the interrupt occurred. The pt_regs structure
+consists of 15 fields:
+• The first nine fields are the register values pushed by SAVE_ALL
+• The tenth field, referenced through a field called orig_eax, encodes the IRQ
+number
+• The remaining fields correspond to the register values pushed on automati-
+cally by the control unit
+*/
+struct pt_regs {
+    unsigned long ebx;      /* 0x00 */
+    unsigned long ecx;      /* 0x04 */
+    unsigned long edx;      /* 0x08 */
+    unsigned long esi;      /* 0x0C */
+    unsigned long edi;      /* 0x10 */
+    unsigned long ebp;      /* 0x14 */
+    unsigned long eax;      /* 0x18 */
+
+    unsigned long ds;       /* 0x1C */
+    unsigned long es;       /* 0x20 */
+    unsigned long fs;       /* 0x24 */
+    unsigned long gs;       /* 0x28 */
+
+    unsigned long orig_eax; /* 0x2C */
+
+    unsigned long eip;      /* 0x30 */
+    unsigned long cs;       /* 0x34 */
+    unsigned long eflags;   /* 0x38 */
+    unsigned long oldesp;   /* 0x3C */
+    unsigned long oldss;    /* 0x40 */
+};
+
 #define PRIORITIES 5
 struct prio_array_t {
     int nr_active;
@@ -217,6 +305,46 @@ struct prio_array_t {
     */
     struct list_head queue[PRIORITIES];
 };
+
+//gives you kernel stack top
+#define KSTK_TOP(info) \
+({ \
+    (unsigned long)((unsigned long)info + THREAD_SIZE); \
+})
+/*
+ *
+ *
+ *  High address
+    +-------------------------+
+    | reserved 8 bytes        |
+    +-------------------------+
+    | struct pt_regs          | ← task_pt_regs()
+    +-------------------------+
+    | kernel stack            |
+    | function frames         |
+    | interrupts              |
+    | syscalls                |
+    +-------------------------+
+    | struct thread_info      |
+    +-------------------------+
+    Low address
+    In the below the macro, 
+    it first points to top of stack (high address), and then 
+    subtracts 8 because you may have entered from user mode,
+    hence it saves ss and esp, if its switching from kernel 
+    to kernel mode, nothing is saved.
+    But to keep standard we've done this.
+    __regs__ - 1 is pointer arithmetic 
+
+
+*/
+#define task_pt_regs(task)                                             \
+({                                                                     \
+       struct pt_regs *__regs__;                                       \
+       __regs__ = (struct pt_regs *)(KSTK_TOP(task_stack_page(task)) - 8); \
+       __regs__ - 1;                                                   \
+})
+
     
 void tss_load(int offset);
 void sched_init(void);
@@ -224,6 +352,22 @@ void do_exit(int signal);
 void handle_sig(void);
 void schedule(void);
 int kernel_thread(int (*fn)(void *), void *arg);
+void move_to_user_mode(void);
+int do_fork(unsigned long clone_flags, unsigned long stack_start,
+            struct pt_regs *regs, unsigned long stack_size);
+int find_empty_process(void);
+
+/* Allocation helpers defined in task.c */
+struct task_struct *alloc_task_struct(void);
+void free_task_struct(struct task_struct *task);
+struct thread_info *alloc_thread_info(struct task_struct *task);
+void *alloc_kernel_stack(void);
+
+/* Global scheduler state */
+extern struct task_struct *current;
+extern struct task_struct *process_table[NR_TASKS];
+extern unsigned long jiffies;
+extern struct tss_struct cpu_tss;
 
 
 #endif
