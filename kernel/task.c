@@ -6,11 +6,12 @@
 #include "time.h"
 #include "signal.h"
 #include "timer.h"
+#include "string.h"
 
+#define KERNEL_CS   0x08
 #define KERNEL_DATA 0x10
-#define KSTACK_ORDER 1   // 8KB stack
-#define STACK_SIZE ( PAGE_SIZE << KSTACK_ORDER )
-#define TSS_ENTRY 5
+#define KSTACK_ORDER 1   
+#define TSS_ENTRY    5
 
 struct tss_struct cpu_tss;
 struct task_struct *current = NULL;
@@ -20,183 +21,114 @@ kmem_cache_t *task_cache = NULL;
 struct task_struct *last_task_used_math = NULL;
 unsigned long jiffies = 0;
 
+/* forward decl from switch.S */
+extern void switch_to(struct task_struct *prev,
+                      struct task_struct *next,
+                      struct task_struct **last);
+
+/*
+ * alloc_kernel_stack - allocates a 2-page (8KB) kernel stack.
+ * Returns a pointer to the TOP of the stack (high address).
+ */
 void *alloc_kernel_stack(void)
 {
     struct page *p = alloc_pages(0, KSTACK_ORDER);
     if (!p)
         return NULL;
 
-    void *addr = page_address(p);
-    printk("stack address will be %p and esp is %p\n", addr, addr + (PAGE_SIZE << KSTACK_ORDER));
-    return page_address(p) + (PAGE_SIZE << KSTACK_ORDER);
+    void *base = page_address(p);
+    void *top  = base + STACK_SIZE;
+    printk("[task] stack: base=%p top=%p\n", base, top);
+    return top;   /* callers treat this as the high-address stack top */
 }
 
-extern void context_switch(struct task_struct *prev, struct task_struct *next);
-
-static inline void context_switch(struct task_struct *prev,
-                                   struct task_struct *next)
+struct task_struct *alloc_task_struct(void)
 {
-    printk("from current : %d, switching to %d\n", current->pid, next->pid);
-    if (next == current)
-        return;
-    current = next;
-    switch_to(prev, next, prev); 
+    struct task_struct *task;
+    task = kmem_cache_zalloc(task_cache, 0);
+    if (!task)
+        printk("alloc_task_struct: kmem_cache_zalloc failed\n");
+    return task;
+}
+
+void free_task_struct(struct task_struct *task)
+{
+    kmem_cache_free(task_cache, task);
 }
 
 /*
- *  'math_state_restore()' saves the current math information in the
- * old math state array, and gets the new ones from the current task
+ * alloc_thread_info - "allocates" a thread_info at the base of a new
+ * kernel stack.  We reuse alloc_kernel_stack: it returns the TOP, so
+ * we subtract STACK_SIZE to get the base where thread_info lives.
  */
-void math_state_restore()
+struct thread_info *alloc_thread_info(struct task_struct *task)
 {
-	if (last_task_used_math)
-		__asm__("fnsave %0"::"m" (last_task_used_math->tss.i387));
-	if (current->used_math)
-		__asm__("frstor %0"::"m" (current->tss.i387));
-	else {
-		__asm__("fninit"::);
-		current->used_math=1;
-	}
-	last_task_used_math=current;
-}
-int fork(void)
-{
-    int iCnt = 0;
-    for (iCnt = 0; iCnt < NR_TASKS; iCnt++) {
-        if (process_table[iCnt] == NULL) 
-            break;
+    void *top = alloc_kernel_stack();
+    if (!top) {
+        printk("alloc_thread_info: failed to allocate kernel stack\n");
+        return NULL;
     }
-    if (iCnt == NR_TASKS) {
-        printk("process table full\n");
-        return -1;
-    }
-
-    struct task_struct *c = kmem_cache_zalloc(task_cache, 0);
-    if (!c) {
-        printk("failed to allocate cache object for task_struct \n");
-        return -1;
-    }
-    /*
-     * allocate a stack and then
-     * copy the current process's stack into child stack
-     */
-
-    void *stack_top = alloc_kernel_stack();
-    memcpy(stack_top, (void *)((unsigned long)current->esp - 
-            ((unsigned long)current->esp % STACK_SIZE)), 
-            (unsigned long)current->esp % STACK_SIZE); 
-    stack_top += current->esp % STACK_SIZE;
-
-    c->esp = (unsigned long)stack_top;
-    c->pid = iCnt;
-    c->state = READY_TO_RUN_M;
-    c->counter = TIME_QUANTUM;
-
-    process_table[iCnt] = c;
-
-    return iCnt;
-    
+    /* thread_info sits at the very base (low address) of the stack */
+    return (struct thread_info *)((unsigned long)top - STACK_SIZE);
 }
 
-void sched_init(void)
+void math_state_restore(void)
 {
-
-    int iCnt = 0;
-    printk("initializing scheduler \n");
-
-    memset(&cpu_tss, 0, sizeof(struct tss_struct));
-
-    for (iCnt = 0; iCnt < NR_TASKS; iCnt++){
-        process_table[iCnt] = NULL;
+    if (last_task_used_math)
+        __asm__("fnsave %0" :: "m"(last_task_used_math->thread.i387));
+    if (current->used_math)
+        __asm__("frstor %0" :: "m"(current->thread.i387));
+    else {
+        __asm__("fninit" ::);
+        current->used_math = 1;
     }
-
-    task_cache = kmem_cache_create("task_struct", sizeof(struct task_struct),
-            KMALLOC_MINALIGN, SLAB_HWCACHE_ALIGN, NULL);
-    if (!task_cache) {
-        printk("failed to create task_struct cache\n");
-        return;
-    }
-
-    struct task_struct *init = kmem_cache_zalloc(task_cache, 0);
-    if (!init) {
-        printk("failed to alloc task_struct cache entry\n");
-        return;
-    }
-
-    void *stack_top = alloc_kernel_stack();
-
-    init->thread.esp = (unsigned long)stack_top;
-    init->state = READY_TO_RUN_M;
-    init->priority = 1;
-    init->counter = TIME_QUANTUM;
-    init->pid = 0; //first handmade process 
-
-    process_table[0] = init;
-    current = init;
-
-    init->thread.esp0 = (unsigned long)stack_top;
-    init->thread.ss0  = KERNEL_DATA;
-
-    printk("kernel stack points to %x\n", init->thread.esp0);
-   
-
+    last_task_used_math = current;
 }
 
-/* test for receipt of signals 
- * input: none
- * output: true, if process received signals that it does not
- *          ignore
- *          false, otherwise
- */
 bool issig(void)
 {
     int iCnt = 0, siglen = sizeof(long);
     while (iCnt < siglen) {
         current->sighandle = iCnt;
-        if(IS_FLAG(current->signal, 1 << iCnt)) {
-            /*
-             * if signal is death of child
-             * special case
-             */
+        if (IS_FLAG(current->signal, 1 << iCnt)) {
             if (iCnt == SIGCLD) {
-
-                /* if ignoring death of child signals */
-                if (current->sig_fn[iCnt] == (void*)1) {
-                    /*
-                     * free process table entries of zombie children
-                     */
-                }
-                else if (!(current->sig_fn[iCnt])) {
+                if (current->sig_fn[iCnt] == (void *)1) {
+                    /* ignore: free zombie children */
+                } else if (!current->sig_fn[iCnt]) {
                     return true;
                 }
-            }
-            else if (!(current->sig_fn[iCnt])) {
+            } else if (!current->sig_fn[iCnt]) {
                 return true;
             }
             CLEAR_FLAG(current->signal, 1 << iCnt);
         }
+        iCnt++;
     }
     return false;
 }
 
-/* handle signals after recognizing their 
- * existence 
- */
 void psig(void)
 {
     if (!issig()) {
-        do_exit(current->sighandle); //paramter as the first 8 bytes, which describe the signal due to which process exited
+        do_exit(current->sighandle);
+        return;
     }
-    CLEAR_FLAG(current->signal, 1 << current->sighandle); //if we've return true from issig() 
-                                                          //we have not cleared the set signal bit
-
-    /*
-     * user has specified handler
-     */
-    if (!(current->sig_fn[current->sighandle])) {
+    CLEAR_FLAG(current->signal, 1 << current->sighandle);
+    if (!current->sig_fn[current->sighandle]) {
         handle_sig();
+        return;
     }
     do_exit(current->sighandle);
+}
+
+static void context_switch(struct task_struct *prev, struct task_struct *next)
+{
+    struct task_struct *last = NULL;
+    printk("[sched] pid %d -> pid %d\n", prev->pid, next->pid);
+    current = next;
+    switch_to(prev, next, &last);
+    /* 'last' is the task that was running before *this* task was switched
+     * back to — useful for cleaning up (e.g., on exit), ignored for now. */
 }
 
 void schedule(void)
@@ -211,22 +143,153 @@ void schedule(void)
             break;
         }
     }
+
     if (next == -1) {
-        printk("[sched] no runnable task found (current pid=%d)\n", current->pid);
+        /* no other runnable task */
         return;
     }
-    if (next == (int)current->pid) {
-        /* no other task available, keep running */
+
+    if (next == (int)current->pid)
         return;
-    }
+
     tnext = process_table[next];
     tnext->counter = TIME_QUANTUM;
-    printk("[sched] switching pid %d -> pid %d\n", current->pid, next);
-    switch_to(tnext);
+    context_switch(current, tnext);
 }
 
 void do_exit(int signal)
 {
+    /* TODO: clean up task resources */
+    current->state = ZOMBIE;
+    schedule();
 }
 
+int find_empty_process(void)
+{
+    int iCnt;
+    for (iCnt = 1; iCnt < NR_TASKS; iCnt++) {
+        if (!process_table[iCnt])
+            return iCnt;
+    }
+    return -1;
+}
 
+void sched_init(void)
+{
+    int iCnt;
+    printk("sched_init: initialising scheduler\n");
+
+    memset(&cpu_tss, 0, sizeof(struct tss_struct));
+    cpu_tss.ss0 = KERNEL_DATA;  /* iwthout this kernel stack won't work */
+
+    for (iCnt = 0; iCnt < NR_TASKS; iCnt++)
+        process_table[iCnt] = NULL;
+
+    task_cache = kmem_cache_create("task_struct", sizeof(struct task_struct),
+                                    KMALLOC_MINALIGN, SLAB_HWCACHE_ALIGN, NULL);
+    if (!task_cache) {
+        printk("sched_init: failed to create task_struct cache\n");
+        return;
+    }
+
+    struct task_struct *init = alloc_task_struct();
+    if (!init)
+        return;
+
+    /*
+     * The idle (init) task gets a fresh kernel stack.
+     * alloc_kernel_stack() returns the TOP (high address).
+     */
+    void *stack_top = alloc_kernel_stack();
+    if (!stack_top) {
+        printk("sched_init: failed to allocate init stack\n");
+        free_task_struct(init);
+        return;
+    }
+
+    /* thread_info lives at base of the stack */
+    init->stack = (unsigned long *)((unsigned long)stack_top - STACK_SIZE);
+
+    init->thread.esp0 = (unsigned long)stack_top;
+    init->thread.esp  = (unsigned long)stack_top;
+    init->thread.ss0  = KERNEL_DATA;
+
+    init->state    = READY_TO_RUN_M;
+    init->priority = 1;
+    init->counter  = TIME_QUANTUM;
+    init->pid      = 0;
+
+    process_table[0] = init;
+    current = init;
+
+    printk("sched_init: idle task esp0=%x\n", init->thread.esp0);
+
+
+}
+
+/* -----------------------------------------------------------------------
+ * kernel_thread - create a kernel-mode thread that runs fn(arg).
+ * ----------------------------------------------------------------------- */
+int kernel_thread(int (*fn)(void *), void *arg)
+{
+    struct pt_regs regs;
+    memset(&regs, 0, sizeof(regs));
+
+    /*
+     * Arrange for ret_from_fork to iret into fn with arg in eax.
+     * copy_thread will copy this regs frame onto the child's kernel stack.
+     */
+    regs.eip    = (unsigned long)fn;
+    regs.eax    = (unsigned long)arg;
+    regs.ds     = KERNEL_DATA;
+    regs.es     = KERNEL_DATA;
+    regs.fs     = KERNEL_DATA;
+    regs.cs     = KERNEL_CS;
+    regs.eflags = 0x0202;       /* IF=1 (enable interrupts) + reserved bit 1 */
+
+    return do_fork(0, 0, &regs, 0);
+}
+
+int fork(void)
+{
+    struct pt_regs regs;
+    memset(&regs, 0, sizeof(regs));
+    /* For a proper fork we'd capture the current register state here;
+     * use do_fork like Linux does instead. */
+    return do_fork(0, 0, &regs, 0);
+}
+
+/* -----------------------------------------------------------------------
+ * move_to_user_mode - transition the calling kernel thread to ring 3.
+ *
+ * Builds a fake iret frame on the kernel stack so faking that user called it and we're returning back
+ *   ss     = 0x23  (user data segment, RPL=3, GDT index 4)
+ *   esp    = current %esp (reuse same stack(linus did the same); fine for early testing)
+ *   eflags = IF=1
+ *   cs     = 0x1B  (user code segment, RPL=3, GDT index 3)
+ *   eip    = address of next instruction (the label '1:' below)
+ *
+ * After iret the CPU switches to ring 3.  ds/es/fs/gs are reloaded
+ * to the user data selector so user-mode code can access data.
+ * ----------------------------------------------------------------------- */
+void move_to_user_mode(void)
+{
+    __asm__ volatile (
+        "movl %%esp, %%eax      \n\t"   /* save current esp              */
+        "pushl $0x23            \n\t"   /* SS  = user data seg (RPL=3)   */
+        "pushl %%eax            \n\t"   /* ESP                           */
+        "pushfl                 \n\t"   /* EFLAGS                        */
+        "orl   $0x200, (%%esp)  \n\t"   /* set IF in saved eflags        */
+        "pushl $0x1B            \n\t"   /* CS  = user code seg (RPL=3)   */
+        "pushl $1f              \n\t"   /* EIP = label after iret        */
+        "iret                   \n\t"   /* got back to ring 3                     */
+        "1:                     \n\t"
+        /* now in ring 3; reload data segments */
+        "movl $0x23, %%eax      \n\t"
+        "movw %%ax, %%ds        \n\t"
+        "movw %%ax, %%es        \n\t"
+        "movw %%ax, %%fs        \n\t"
+        "movw %%ax, %%gs        \n\t"
+        ::: "eax", "memory"
+    );
+}
