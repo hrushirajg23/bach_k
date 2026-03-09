@@ -41,6 +41,7 @@ SRC_DIRS := \
 C_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 ASM_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.asm))
 S_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.S))
+SLC_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
 # === Object Files ===
 # Flatten paths but keep distinct names:
@@ -48,15 +49,17 @@ S_SRCS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.S))
 # bar.asm -> build/bar_asm.o  (Prevents collisions like idt.c vs idt.asm)
 C_OBJS := $(patsubst %.c,$(BUILD_DIR)/%.o,$(notdir $(C_SRCS)))
 ASM_OBJS := $(patsubst %.asm,$(BUILD_DIR)/%_asm.o,$(notdir $(ASM_SRCS)))
-S_OBJS := $(patsubst %.S,$(BUILD_DIR)/%_s.o,$(notdir $(S_SRCS)))
+S_OBJS := $(patsubst %.S,$(BUILD_DIR)/%_S.o,$(notdir $(S_SRCS)))
+SLC_OBJS := $(patsubst %.s,$(BUILD_DIR)/%_s.o,$(notdir $(SLC_SRCS)))
 
-OBJS := $(ASM_OBJS) $(C_OBJS) $(S_OBJS)
+OBJS := $(ASM_OBJS) $(C_OBJS) $(S_OBJS) $(SLC_OBJS)
 
 # === VPATH ===
 # Tell make where to look for source files
 vpath %.c $(SRC_DIRS)
 vpath %.asm $(SRC_DIRS)
 vpath %.S $(SRC_DIRS)
+vpath %.s $(SRC_DIRS)
 
 # === Targets ===
 .PHONY: all clean run debug
@@ -80,9 +83,13 @@ $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 $(BUILD_DIR)/%_asm.o: %.asm | $(BUILD_DIR)
 	$(AS) $(ASFLAGS) $< -o $@
 
-# Assemble .S files
-$(BUILD_DIR)/%_s.o: %.S | $(BUILD_DIR)
+# Assemble .S files (capital S — passed through C preprocessor)
+$(BUILD_DIR)/%_S.o: %.S | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+# Assemble .s files (lowercase — raw GAS, no C preprocessor)
+$(BUILD_DIR)/%_s.o: %.s | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -x assembler -c $< -o $@
 
 # Link Kernel
 $(BUILD_DIR)/yegaos.elf: $(OBJS)
