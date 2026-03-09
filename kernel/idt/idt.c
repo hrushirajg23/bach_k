@@ -55,6 +55,9 @@ void page_fault(void);
 void coprocessor_error(void);
 void reserved(void);
 
+/* defined in syscall.s */
+extern void system_call(void);
+
 static inline void set_gate(
     idt_entry_t *gate,
     uint32_t addr,
@@ -213,6 +216,7 @@ void trap_init(void)
 		set_trap_gate(i,&reserved);
     set_intr_gate(32, &timer_intr);
     set_intr_gate(33, &keyboard_driver);
+    set_system_gate(0x80, &system_call);
 }
 
 
