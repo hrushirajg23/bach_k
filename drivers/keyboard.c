@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "io_access.h"
-#include "irq.h"
 #include "vga_display.h"
 
 #define KEY_DATA_REG 0x60
