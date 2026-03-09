@@ -5,6 +5,7 @@
 
 #include "hardware.h"
 #include "serial.h"
+#include "pic.h"   /* send_EOI */
 
 // Talk to hard disk using ATA (Advanced Technology Attachment)
 // Most of this is from: http://lateblt.tripod.com/atapi.htm
@@ -195,13 +196,20 @@ void disk_read_internal(uint32_t lba, uint8_t *buf, uint8_t nsectors) {
     }
     ata_wait_until_not_busy();
 
-    // check if an error was set:
+    /* check if an error was set:
+     * reading ATA_STATUS_REGISTER also clears the pending IRQ. */
     uint8_t status = port_byte_in(ATA_STATUS_REGISTER);
     if (status & ATA_STATUS_ERR) {
-        // uh oh!
+        /* uh oh! */
         printk("Error reading disk... (2)");
     }
 
+    /*
+     * Acknowledge the IDE IRQ (IRQ14 on primary channel).
+     * Without this EOI the PIC holds IRQ2 (cascade) in-service,
+     * which blocks IRQ0 (timer) and hangs the scheduler.
+     */
+    send_EOI(14);
 }
 
 /* disk read function for use before interrupts are ready.
