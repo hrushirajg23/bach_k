@@ -48,13 +48,41 @@
 
 
 
-int test_thread(void *arg) {
-    int id = (int)arg;
+static int test_thread(void *arg) {
     int count = 0;
-    asm volatile("sti");  /* re-enable interrupts: context_switch enters here with IF=0 */
-    while(1) {
-        printk("[sched] Task %d is running (iteration %d)\n", id, count++);
-        for(volatile int i = 0; i < 5000000; i++);
+
+    if (current->pid == 1) {
+        /*
+         * Ring 0: print before dropping to user mode.
+         * After move_to_user_mode() we are in ring 3 and must NOT
+         * call printk — it uses outb (port I/O) which requires IOPL=3.
+         */
+        printk("[init] pid 1: dropping to ring 3, will fork from user mode\n");
+        move_to_user_mode();
+
+        /*
+         * Now in ring 3.  Issue fork via int $0x80 (syscall #2).
+         * child's eax = 0
+         * parent's eax = child pid
+         * Both parent and child fall into the busy loop below.
+         * The [sched] / [timer] lines printed by the ring-0 interrupt
+         * handler will show pid 0, pid 1 and pid 2 all alternating.
+         */
+        int child_pid;
+        __asm__ volatile (
+            "movl $2, %%eax \n\t"   /* NR_fork = 2 */
+            "int  $0x80     \n\t"
+            : "=a"(child_pid)
+        );
+        /* user-mode busy loop — no printk */
+        while (1)
+            for (volatile int i = 0; i < 500; i++);
+    }
+
+    /* Kernel-mode path (pid 0 idle, or any kernel-thread pid > 1 spawned later) */
+    while (1) {
+        printk("[sched] Task %d running (iter %d)\n", current->pid, count++);
+        for (volatile int i = 0; i < 5000000; i++);
     }
     return 0;
 }
@@ -111,7 +139,6 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     sched_init();
 
     printk("IDT setup...\n");
-    /* setup_idt(); */
     trap_init();
 
     /* printk("Install timer & keyboard drivers..\n"); */
@@ -162,6 +189,12 @@ void kernel_main(uint32_t magic, uint32_t addr) {
 
     printk("booted..................\n");
 
+    printk("spawning kernel thread for fork test (process 0 -> process 1)...\n");
+    int arg0 = 0;
+    kernel_thread(test_thread, &arg0);
+    printk("kernel threads created. entering loop.\n");
+
+    /* Idle loop: scheduler will preempt this in favour of the threads */
     while (1) {
         asm volatile("hlt");
     }
