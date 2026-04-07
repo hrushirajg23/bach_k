@@ -49,7 +49,7 @@ void operate_timer(int cpl)
 
     /* Schedule from both user mode (cpl!=0) and kernel mode (cpl==0).
      * Kernel threads always run at ring 0 so we must schedule here too. */
-    printk("[timer] pid=%d counter expired, scheduling\n", current->pid);
-    schedule();
+    /* printk("[timer] pid=%d counter expired, scheduling\n", current->pid); */
+//    schedule();
 }
 

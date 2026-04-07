@@ -80,8 +80,8 @@ static void die(char * str,long esp_ptr,long nr)
 	long * esp = (long *) esp_ptr;
 	int i;
 
-	printk("%s: %04x\n\r",str,nr&0xffff);
-	printk("EIP:\t%04x:%p\nEFLAGS:\t%p\nESP:\t%04x:%p\n",
+	printk("%s: %x\n\r",str,nr&0xffff);
+	printk("EIP:\t%x:%p\nEFLAGS:\t%p\nESP:\t%x:%p\n",
 		esp[1],esp[0],esp[2],esp[4],esp[3]);
 	/* printk("fs: %04x\n",_fs()); */
 	/* printk("base: %p, limit: %p\n",get_base(current->ldt[1]),get_limit(0x17)); */
@@ -215,7 +215,9 @@ void trap_init(void)
 	for (i=17;i<32;i++)
 		set_trap_gate(i,&reserved);
     set_intr_gate(32, &timer_intr);
-    set_intr_gate(33, &keyboard_driver);
+    set_intr_gate(33, &keyboard_intr);
+    set_intr_gate(36, &serial_intr);
+
     set_system_gate(0x80, &system_call);
 }
 

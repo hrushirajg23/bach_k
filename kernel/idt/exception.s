@@ -9,7 +9,7 @@
 .globl device_not_available, double_fault, coprocessor_segment_overrun
 .globl invalid_TSS, segment_not_present, stack_segment
 .globl general_protection, coprocessor_error, reserved
-.globl timer_intr
+.globl timer_intr, keyboard_intr, serial_intr
 
 .extern do_divide_error
 .extern do_int3
@@ -26,6 +26,8 @@
 .extern do_segment_not_present
 .extern do_stack_segment
 .extern do_general_protection
+.extern keyboard_driver
+.extern serial_handle
 
 .extern current
 .extern last_task_used_math
@@ -192,6 +194,51 @@ timer_intr:
     pushl %eax
     call operate_timer
     addl $4, %esp
+
+    popl %gs
+    popl %fs
+    popl %es
+    popl %ds
+    popal
+    iret
+
+//so my save_all routine is waste ?
+keyboard_intr:
+    pushal
+    pushl %ds
+    pushl %es
+    pushl %fs
+    pushl %gs
+
+    movw $0x10, %ax
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
+
+    call keyboard_driver
+
+    popl %gs
+    popl %fs
+    popl %es
+    popl %ds
+    popal
+    iret
+
+serial_intr:
+    pushal
+    pushl %ds
+    pushl %es
+    pushl %fs
+    pushl %gs
+
+    movw $0x10, %ax
+    movw %ax, %ds
+    movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
+
+    call serial_handle
 
     popl %gs
     popl %fs

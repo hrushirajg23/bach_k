@@ -178,7 +178,7 @@ struct task_struct {
 	// unsigned long close_on_exec;
 	struct file * filp[NR_OPEN];
     int first_free_filp; //file free filp entry to save time
-
+    struct thread_info *thread_info; //back pointer to thread_info
 };
 
 struct thread_info {
