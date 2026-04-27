@@ -228,4 +228,9 @@ int register_filesystem(struct file_system_type *fs);
 int unregister_filesystem(struct file_system_type *fs);
 struct file_system_type *get_fs_type(const char *name);
 
+/* Superblock management */
+struct super_block *alloc_super(void);
+void destroy_super(struct super_block *sb);
+struct super_block *get_super(unsigned char dev_no);
+
 #endif

@@ -875,6 +875,26 @@ oops:
     return NULL;
 }
 
+void *kzalloc(size_t size, int flags)
+{
+    struct cache_sizes *csizep = malloc_sizes;
+    kmem_cache_t *cachep;
+
+    for (; csizep->cs_size; csizep++) {
+        /*
+         * malloc_sizes table to locate the nearest power-of-2 size 
+         * to the requested size
+         */
+        if (size > csizep->cs_size)
+            continue;
+
+        /* printk("close matching size is : %x\n", csizep->cs_size); */
+        cachep = csizep->cs_cachep;
+        return kmem_cache_zalloc(cachep, flags);
+    }
+    return NULL;
+}
+
 void *kmalloc(size_t size, int flags)
 {
     struct cache_sizes *csizep = malloc_sizes;

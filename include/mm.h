@@ -9,7 +9,7 @@
 
 #define CLEAR_FLAG(var, flag) ((var &= ~(flag)))
 #define SET_FLAG(var, flag) ((var |= (flag)))
-#define IS_FLAG(var, flag) ((var & flag) == (flag)) 
+#define IS_FLAG(var, flag)      (((var) & (flag)) != 0)
 
 
 void memset(void *addr, char val, unsigned int size);
