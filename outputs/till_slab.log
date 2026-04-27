@@ -22,13 +22,13 @@ i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c kernel/memory-manageme
 nasm -f elf32 kernel/memory-management/page.asm -o build/page.o
 i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c data_structures/list.c -o build/list.o
 i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c kernel/memory-management/slab.c -o build/slab.o
-i686-elf-gcc -T linker/linker.ld -o build/yegaos.elf -ffreestanding -O0 -g -nostdlib build/boot.o build/kernel.o build/gdt.o build/gdt_flush.o build/idt.o build/isr_asm.o build/exceptions.o build/irq_asm.o build/irq.o build/pic.o build/serial.o build/timer.o build/keyboard.o build/vga_display.o build/pit.o build/manager.o build/allocator.o build/mm.o build/buddy.o build/page.o build/list.o build/slab.o -lgcc
-i686-elf-objcopy -O binary build/yegaos.elf build/yegaos.bin
+i686-elf-gcc -T linker/linker.ld -o build/bach_k.elf -ffreestanding -O0 -g -nostdlib build/boot.o build/kernel.o build/gdt.o build/gdt_flush.o build/idt.o build/isr_asm.o build/exceptions.o build/irq_asm.o build/irq.o build/pic.o build/serial.o build/timer.o build/keyboard.o build/vga_display.o build/pit.o build/manager.o build/allocator.o build/mm.o build/buddy.o build/page.o build/list.o build/slab.o -lgcc
+i686-elf-objcopy -O binary build/bach_k.elf build/bach_k.bin
 mkdir -p iso/boot/grub
-cp build/yegaos.elf  iso/boot/yegaos.elf
-cp build/yegaos.bin  iso/boot/yegaos.bin
+cp build/bach_k.elf  iso/boot/bach_k.elf
+cp build/bach_k.bin  iso/boot/bach_k.bin
 cp grub/grub.cfg           iso/boot/grub/
-grub-mkrescue -o build/yegaos.iso iso >/dev/null 2>&1
+grub-mkrescue -o build/bach_k.iso iso >/dev/null 2>&1
 [OK] Multiboot compliant
 Serial initialized. Booting...
 kernel_start= 0x00200000
