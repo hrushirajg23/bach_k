@@ -1,0 +1,36 @@
++int kernel_thread(int (*fn)(void *), void *arg)
++{
++    int iCnt;
++    for (iCnt = 0; iCnt < NR_TASKS; iCnt++) {
++        if (process_table[iCnt] == NULL) break;
++    }
++    if (iCnt == NR_TASKS) return -1;
++    
++    struct task_struct *c = kmem_cache_zalloc(task_cache, 0);
++    if (!c) return -1;
+     
++    void *stack = alloc_kernel_stack();
++    unsigned long *sp = (unsigned long *)stack;
++    
++    *(--sp) = (unsigned long)arg;
++    *(--sp) = 0; // dummy return address from fn
++    *(--sp) = (unsigned long)fn; // address context_switch returns to
++    *(--sp) = 0; // ebp
++    *(--sp) = 0; // ebx
++    *(--sp) = 0; // esi
++    *(--sp) = 0; // edi
++
++    c->esp = (unsigned long)sp;
++    c->pid = iCnt;
++    c->state = READY_TO_RUN_M;
++    c->counter = TIME_QUANTUM;
++    
++    process_table[iCnt] = c;
++    return iCnt;
+ }
+
+printk("Spawning test threads...\n");
+    kernel_thread(test_thread, (void*)1);
+    kernel_thread(test_thread, (void*)2);
+
+

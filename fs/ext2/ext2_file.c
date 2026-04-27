@@ -6,6 +6,7 @@
 #include "slab.h"
 #include "namei.h"
 #include "task.h"
+#include "buffer.h"
 
 /* Forward declarations */
 static ssize_t ext2_file_read(struct file *filp, char __user *buf, size_t count, loff_t *ppos);

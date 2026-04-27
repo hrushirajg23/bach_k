@@ -9,6 +9,14 @@
 
 #include <stdint.h>
 
+#define RING0 0
+#define RING3 3
+
+#define _KERNEL_CS  0x08
+#define _KERNEL_DS  0x10
+#define _USER_CS    0x18
+#define _USER_DS    0x20
+
 /* GDT entry struct */
 typedef struct {
   uint16_t limit_low;

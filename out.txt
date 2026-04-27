@@ -34,15 +34,15 @@ i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c kernel/display/print.c
 i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c kernel/display/vga_display.c -o build/vga_display.o
 i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c drivers/pit/pit.c -o build/pit.o
 i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c data_structures/list.c -o build/list.o
-i686-elf-gcc -T linker/linker.ld -o build/yegaos.elf -ffreestanding -O0 -g -nostdlib -Iinclude build/tss_asm.o build/page_asm.o build/gdt_flush_asm.o build/idt_asm.o build/isr_asm.o build/irq_asm.o build/boot_asm.o build/kernel.o build/string.o build/system.o build/task.o build/allocator.o build/buddy.o build/manager.o build/mem-test.o build/mm.o build/slab.o build/disk.o build/keyboard.o build/serial.o build/timer.o build/ufs.o build/buffer.o build/gdt.o build/idt.o build/exceptions.o build/irq.o build/pic.o build/print.o build/vga_display.o build/pit.o build/list.o -lgcc
+i686-elf-gcc -T linker/linker.ld -o build/bach_k.elf -ffreestanding -O0 -g -nostdlib -Iinclude build/tss_asm.o build/page_asm.o build/gdt_flush_asm.o build/idt_asm.o build/isr_asm.o build/irq_asm.o build/boot_asm.o build/kernel.o build/string.o build/system.o build/task.o build/allocator.o build/buddy.o build/manager.o build/mem-test.o build/mm.o build/slab.o build/disk.o build/keyboard.o build/serial.o build/timer.o build/ufs.o build/buffer.o build/gdt.o build/idt.o build/exceptions.o build/irq.o build/pic.o build/print.o build/vga_display.o build/pit.o build/list.o -lgcc
 [OK] Linked ELF binary
-i686-elf-objcopy -O binary build/yegaos.elf build/yegaos.bin
+i686-elf-objcopy -O binary build/bach_k.elf build/bach_k.bin
 [OK] Created flat binary
 mkdir -p iso/boot/grub
-cp build/yegaos.elf  iso/boot/yegaos.elf
-cp build/yegaos.bin  iso/boot/yegaos.bin
+cp build/bach_k.elf  iso/boot/bach_k.elf
+cp build/bach_k.bin  iso/boot/bach_k.bin
 cp grub/grub.cfg           iso/boot/grub/
-grub-mkrescue -o build/yegaos.iso iso > /dev/null 2>&1
+grub-mkrescue -o build/bach_k.iso iso > /dev/null 2>&1
 [OK] Multiboot compliant
 Serial initialized. Booting...
 kernel_start= 0x00200000

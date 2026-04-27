@@ -36,7 +36,7 @@ void disk_sync_super(void);
 
 /* Access to global data */
 extern bgdesc_t *get_bgdt(void);
-extern ext2_super_block *get_super(void);
+extern ext2_super_block *get_ext2_super(void);
 extern uint16_t get_n_block_groups(void);
 
 #endif /* _EXT2_BALLOC_H */

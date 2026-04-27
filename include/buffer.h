@@ -1,7 +1,9 @@
 #ifndef _BUFFER_H
 #define _BUFFER_H
 
-#include "ufs.h"
+#include "list.h"
+#include "vfs.h"
+#include "fs.h"
 
 #define hash_fn(bno, devno) (bno % devno)
 
@@ -18,7 +20,7 @@
 
 
 struct buffer_head{
-    unsigned short flags;
+    unsigned int flags;
     unsigned int b_count; //buffer ref count
     char* b_data; //ptr to data //1024 bytes
     unsigned short b_dev; //if ==0 means free
@@ -39,5 +41,6 @@ struct buffer_head *bread(unsigned short dev_no, unsigned long blocknr);
 void bwrite(struct buffer_head *bh);
 void brelse(struct buffer_head *bh);
 struct buffer_head *getblk(unsigned short dev_no, unsigned long blocknr);
+void create_buffer_cache(void);
 
 #endif

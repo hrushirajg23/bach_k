@@ -3,6 +3,7 @@
 #include "serial.h"
 #include "string.h"
 #include "slab.h"
+#include "buffer.h"
 
 #define S_BLOCK_SIZE 1024
 

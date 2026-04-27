@@ -20,7 +20,6 @@
 
 #include "gdt.h"
 #include "idt.h"
-#include "irq.h"
 #include "kernel.h"
 #include "manager.h"
 #include "multiboot.h"
@@ -32,11 +31,13 @@
 #include "mm.h"
 #include "task.h"
 #include "disk.h"
-/* #include "fs.h" */
+#include "fs.h"
 #include "string.h"
 /* #include "vfs.h" */
-#include "ufs.h"
 #include "buffer.h"
+#include "time.h"
+#include "keyboard.h"
+#include "shell.h"
 
 #if defined(__linux__)
 #error                                                                         \
@@ -47,8 +48,44 @@
 #error "This tutorial needs to be compiled with a ix86-elf compiler"
 #endif
 
+static int test_thread(void *arg) {
+    int count = 0;
 
+    if (current->pid == 1) {
+        /*
+         * Ring 0: print before dropping to user mode.
+         * After move_to_user_mode() we are in ring 3 and must NOT
+         * call printk — it uses outb (port I/O) which requires IOPL=3.
+         */
+        printk("[init] pid 1: dropping to ring 3, will fork from user mode\n");
+        move_to_user_mode();
 
+        /*
+         * Now in ring 3.  Issue fork via int $0x80 (syscall #2).
+         * child's eax = 0
+         * parent's eax = child pid
+         * Both parent and child fall into the busy loop below.
+         * The [sched] / [timer] lines printed by the ring-0 interrupt
+         * handler will show pid 0, pid 1 and pid 2 all alternating.
+         */
+        int child_pid;
+        __asm__ volatile (
+            "movl $2, %%eax \n\t"   /* NR_fork = 2 */
+            "int  $0x80     \n\t"
+            : "=a"(child_pid)
+        );
+        /* user-mode busy loop — no printk */
+        while (1)
+            for (volatile int i = 0; i < 500; i++);
+    }
+
+    /* Kernel-mode path (pid 0 idle, or any kernel-thread pid > 1 spawned later) */
+    while (1) {
+        printk("[sched] Task %d running (iter %d)\n", current->pid, count++);
+        for (volatile int i = 0; i < 5000000; i++);
+    }
+    return 0;
+}
 
 /* Main kernel entry point */
 void kernel_main(uint32_t magic, uint32_t addr) {
@@ -89,6 +126,8 @@ void kernel_main(uint32_t magic, uint32_t addr) {
 
     init_mem(mbi);
 
+    time_init();
+
     printk("\nGDT init...\n");
     gdt_initialize();
 
@@ -100,17 +139,16 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     sched_init();
 
     printk("IDT setup...\n");
-    /* setup_idt(); */
     trap_init();
-
-    printk("Install timer & keyboard drivers..\n");
-    install_handlers();
 
     printk("PIT init...\n");
     init_timer(FREQUENCY);
 
     printk("IDT init...\n");
     initialize_idt();
+
+    /* Enable interrupts globally - without this the timer NEVER fires */
+    asm volatile("sti");
 
     printk("Boot complete.\n");
 
@@ -120,27 +158,54 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     printk("initializing buffer cache\n");
     create_buffer_cache();
 
-    printk("cooking fs\n");
-    /* mkufs(8); */
+    /*
+     * CAUTION: this erases the whole existing file system
+     * remember, for once you use mkfs, comment it out,
+     * next time to use the os freely and apply your changes
+     */
+    /* mkfs(0, 8); // Commented out to test persistence. Uncomment to reformat. */
+ /* Create 8MB ext2 filesystem at offset 0 */
+
+    printk("initialising ext2 file system...........................\n");
+    ext2_init_fs();
 
     printk("initializing inode cache \n");
     create_inode_cache();
+        
+    printk("mounting rootfs.........\n");
+    ext2_mount_root();
 
     printk("testing fs\n");
-    test_fs();
-    /* printk("initializing ext2_fs \n"); */
-    /* ext2_fs_init(); */
+    /* test_fs(); // Superblock dump and file test */
 
+    printk("syncing fs\n");
+    sync();
+
+    printk("initalizing keyboard\n");
+    kb_init();
 
     terminal_initialize();
-    terminal_writestring("Hello, Welcome To Yega Kernel!\n");
+    terminal_writestring("Hello, Welcome To Bach Kernel!\n");
+    shell_init();
+
 
     printk("booted..................\n");
 
+    printk("spawning kernel thread for fork test (process 0 -> process 1)...\n");
+    int arg0 = 0;
+    kernel_thread(test_thread, &arg0);
+    printk("kernel threads created. entering loop.\n");
 
-
+//    Idle loop: scheduler will preempt this in favour of the threads
     while (1) {
-        asm volatile("hlt");
+        //asm volatile("hlt");
+
+        for (int i = 0; i < 100000; i++) {
+            for (int j = 0; j < 100000; j++) {
+                
+            }
+        }
+        printk("hello \n");
     }
 }
 

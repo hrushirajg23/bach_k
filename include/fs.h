@@ -276,6 +276,10 @@ int mkdir(char *pathname);
 int rmdir(char *pathname);
 int ls(char *path);
 
+/* shell-facing helpers (serial output) */
+void ls_root(void);
+void cat_file(const char *fn);
+
 /* open file structure.*/
 typedef struct {
     // inode for this file
@@ -336,7 +340,7 @@ uint32_t fs_start_to_lba_superblk(uint32_t mb_start);
 // void bwrite(struct buffer_head *bh);
 // void brelse(struct buffer_head *bh);
 // struct buffer_head *getblk(unsigned short dev_no, unsigned long blocknr);
-// void show_fs(uint32_t mb_start);
+void show_fs(uint32_t mb_start);
 
 
 /*
@@ -420,6 +424,16 @@ void ext2_read_inode(struct inode *inode);
 int ext2_write_inode(struct inode *inode);
 void ext2_delete_inode(struct inode *inode);
 int ext2_get_block(struct inode *inode, uint32_t block_idx, uint32_t *block_num);
+
+/* ext2 mount and initialization */
+int ext2_mount_root(void);
+int ext2_init_fs(void);
+int ext2_register_filesystem(void);
+extern struct file_system_type ext2_fs_type;
+
+/* Filesystem sync */
+void sync(void);
+
 #endif
 
 
