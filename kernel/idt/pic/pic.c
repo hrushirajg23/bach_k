@@ -55,13 +55,15 @@ void remap_pic(int offset1, int offset2) {
   outb(PIC2_DATA, ICW4_8086);
   io_wait();
 
-  /* unmask both PICs */
-  outb(PIC1_DATA, 0);
-  outb(PIC2_DATA, 0);
+  /* mask all IRQs first, then unmask only the ones we have handlers for */
+  outb(PIC1_DATA, 0xFF);
+  outb(PIC2_DATA, 0xFF);
 
-  /* umask IRQ0-1*/
+  /* unmask IRQ0 (timer), IRQ1 (keyboard), IRQ2 (cascade to slave), IRQ4 (serial) */
   IRQ_clear_mask(0);
   IRQ_clear_mask(1);
+  IRQ_clear_mask(2);
+  IRQ_clear_mask(4);
 }
 
 /* send End of Interrupt */
