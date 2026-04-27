@@ -36,6 +36,8 @@
 /* #include "vfs.h" */
 #include "buffer.h"
 #include "time.h"
+#include "keyboard.h"
+#include "shell.h"
 
 #if defined(__linux__)
 #error                                                                         \
@@ -45,8 +47,6 @@
 #if !defined(__i386__)
 #error "This tutorial needs to be compiled with a ix86-elf compiler"
 #endif
-
-
 
 static int test_thread(void *arg) {
     int count = 0;
@@ -141,9 +141,6 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     printk("IDT setup...\n");
     trap_init();
 
-    /* printk("Install timer & keyboard drivers..\n"); */
-    /* install_handlers(); */
-
     printk("PIT init...\n");
     init_timer(FREQUENCY);
 
@@ -184,8 +181,13 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     printk("syncing fs\n");
     sync();
 
+    printk("initalizing keyboard\n");
+    kb_init();
+
     terminal_initialize();
     terminal_writestring("Hello, Welcome To Yega Kernel!\n");
+    shell_init();
+
 
     printk("booted..................\n");
 
@@ -194,9 +196,16 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     kernel_thread(test_thread, &arg0);
     printk("kernel threads created. entering loop.\n");
 
-    /* Idle loop: scheduler will preempt this in favour of the threads */
+//    Idle loop: scheduler will preempt this in favour of the threads
     while (1) {
-        asm volatile("hlt");
+        //asm volatile("hlt");
+
+        for (int i = 0; i < 100000; i++) {
+            for (int j = 0; j < 100000; j++) {
+                
+            }
+        }
+        printk("hello \n");
     }
 }
 
