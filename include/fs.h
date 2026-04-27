@@ -276,6 +276,10 @@ int mkdir(char *pathname);
 int rmdir(char *pathname);
 int ls(char *path);
 
+/* shell-facing helpers (serial output) */
+void ls_root(void);
+void cat_file(const char *fn);
+
 /* open file structure.*/
 typedef struct {
     // inode for this file
