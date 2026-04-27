@@ -185,7 +185,7 @@ void kernel_main(uint32_t magic, uint32_t addr) {
     kb_init();
 
     terminal_initialize();
-    terminal_writestring("Hello, Welcome To Yega Kernel!\n");
+    terminal_writestring("Hello, Welcome To Bach Kernel!\n");
     shell_init();
 
 

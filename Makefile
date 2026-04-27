@@ -1,5 +1,5 @@
 # ====================================
-# YegaOS Kernel Build System
+# Bach Kernel Kernel Build System
 # ====================================
 
 # === Toolchain ===
@@ -64,7 +64,7 @@ vpath %.s $(SRC_DIRS)
 # === Targets ===
 .PHONY: all clean run debug
 
-all: $(BUILD_DIR)/yegaos.iso
+all: $(BUILD_DIR)/bach_k.iso
 
 # === Build Rules ===
 
@@ -92,27 +92,27 @@ $(BUILD_DIR)/%_s.o: %.s | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -x assembler -c $< -o $@
 
 # Link Kernel
-$(BUILD_DIR)/yegaos.elf: $(OBJS)
+$(BUILD_DIR)/bach_k.elf: $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(CFLAGS) $^
 	@echo "[OK] Linked ELF binary"
 
 # Create Binary
-$(BUILD_DIR)/yegaos.bin: $(BUILD_DIR)/yegaos.elf
+$(BUILD_DIR)/bach_k.bin: $(BUILD_DIR)/bach_k.elf
 	$(OBJCOPY) -O binary $< $@
 	@echo "[OK] Created flat binary"
 
 # Create ISO
-$(BUILD_DIR)/yegaos.iso: $(BUILD_DIR)/yegaos.elf $(BUILD_DIR)/yegaos.bin | $(ISO_DIR)/boot/grub
-	cp $(BUILD_DIR)/yegaos.elf  $(ISO_DIR)/boot/yegaos.elf
-	cp $(BUILD_DIR)/yegaos.bin  $(ISO_DIR)/boot/yegaos.bin
+$(BUILD_DIR)/bach_k.iso: $(BUILD_DIR)/bach_k.elf $(BUILD_DIR)/bach_k.bin | $(ISO_DIR)/boot/grub
+	cp $(BUILD_DIR)/bach_k.elf  $(ISO_DIR)/boot/bach_k.elf
+	cp $(BUILD_DIR)/bach_k.bin  $(ISO_DIR)/boot/bach_k.bin
 	cp grub/grub.cfg           $(ISO_DIR)/boot/grub/
 	grub-mkrescue -o $@ $(ISO_DIR) > /dev/null 2>&1
-	@grub-file --is-x86-multiboot $(BUILD_DIR)/yegaos.elf && echo "[OK] Multiboot compliant" || echo "[ERROR] Not multiboot compliant"
+	@grub-file --is-x86-multiboot $(BUILD_DIR)/bach_k.elf && echo "[OK] Multiboot compliant" || echo "[ERROR] Not multiboot compliant"
 
 # === Helpers ===
 
-run: $(BUILD_DIR)/yegaos.iso
-	qemu-system-i386 -cdrom $(BUILD_DIR)/yegaos.iso -serial stdio
+run: $(BUILD_DIR)/bach_k.iso
+	qemu-system-i386 -cdrom $(BUILD_DIR)/bach_k.iso -serial stdio
 
 clean:
 	rm -rf $(BUILD_DIR) $(ISO_DIR)
