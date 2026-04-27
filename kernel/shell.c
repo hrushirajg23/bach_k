@@ -49,7 +49,7 @@ static void cmd_echo(char *args) {
 }
 
 static void cmd_uname(void) {
-    printk("\nYegaOS v0.1 (i386)\n");
+    printk("\nBach Kernel v0.1 (i386)\n");
 }
 
 /* ---- main dispatch ---- */
