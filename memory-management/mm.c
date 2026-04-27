@@ -343,15 +343,15 @@ void setup_paging(unsigned int pgdir_entries)
 
     for (iCnt = 0; iCnt < pgdir_entries; iCnt++) {
         temp_addr = get_free_page();
-        swapper_pg_dir[pgd + iCnt] = (temp_addr & 0xFFFFF000) | PG_PRESENT | PG_RW;
-        swapper_pg_dir[iCnt] = (temp_addr & 0xFFFFF000) | PG_PRESENT | PG_RW;
+        swapper_pg_dir[pgd + iCnt] = (temp_addr & 0xFFFFF000) | PG_PRESENT | PG_RW | PG_USER;
+        swapper_pg_dir[iCnt] = (temp_addr & 0xFFFFF000) | PG_PRESENT | PG_RW | PG_USER;
         pg_ptr = (unsigned long *)temp_addr;
 
         /* printk("\npg_dir entry : %d", iCnt); */
         /* printk("\npage_table address : %p", pg_ptr); */
         jCnt = 0;
         while (phy_addr < total_ram && jCnt < PG_TABLE_ENTRIES) {
-            pg_ptr[jCnt] = (phy_addr & 0xFFFFF000) | PG_PRESENT | PG_RW;
+            pg_ptr[jCnt] = (phy_addr & 0xFFFFF000) | PG_PRESENT | PG_RW | PG_USER;
 
             /* printk("\npage_table_entry : %d\t val: %x", jCnt, pg_ptr[jCnt]); */
             jCnt++;

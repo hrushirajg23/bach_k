@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+void serial_intr(void);
 void serial_init();
 void serial_writechar(char c);
 void serial_writestring(const char *str);

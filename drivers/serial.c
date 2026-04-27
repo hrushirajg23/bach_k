@@ -9,6 +9,7 @@
 #include <stdarg.h>
 #include "io_access.h"
 #include "serial.h"
+#include "pic.h"
 
 #define COM1 0x3F8
 
@@ -44,6 +45,7 @@ void serial_init() {
   outb(COM1 + 3, 0x03); // 8 bits, no parity, one stop bit
   outb(COM1 + 2, 0xC7); // Enable FIFO, clear them, with 14-byte threshold
   outb(COM1 + 4, 0x0B); // IRQs enabled, RTS/DSR set
+  outb(COM1 + 1, 0x01); // Enable Rx interrupts
 }
 
 /* Writes a single character to the serial port */
@@ -54,11 +56,29 @@ void serial_writechar(char c) {
 }
 
 /* Writes a string to the serial port */
-void serial_writestring(const char *str) {
+void serial_writestring(const char *str) 
+{
   while (*str)
     serial_writechar(*str++);
 }
 
+int serial_received() {
+   return (inb(COM1 + 5) & 0x20);
+}
+
+char serial_readchar() 
+{
+   while (serial_received() == 0);
+
+   return inb(COM1);
+}
+
+void serial_handle(void)
+{
+    char c = serial_readchar();
+    printk("serial character is %c\n", c);
+    send_EOI(4);
+}
 /* Writes an integer to the serial port */
 void serial_writeint(int num) {
   char buf[12];
