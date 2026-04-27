@@ -1,5 +1,7 @@
 # Bach Kernel (bach_k)
 
+![Version](https://img.shields.io/badge/version-v0.1.0-blue.svg)
+
 > I started this project to understand memory allocators — it ended up growing into a kernel.
 
 ## Table of Contents
