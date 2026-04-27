@@ -34,15 +34,15 @@ i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c kernel/display/print.c
 i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c kernel/display/vga_display.c -o build/vga_display.o
 i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c drivers/pit/pit.c -o build/pit.o
 i686-elf-gcc -ffreestanding -O0 -g -nostdlib -Iinclude -c data_structures/list.c -o build/list.o
-i686-elf-gcc -T linker/linker.ld -o build/yegaos.elf -ffreestanding -O0 -g -nostdlib -Iinclude build/tss_asm.o build/page_asm.o build/gdt_flush_asm.o build/idt_asm.o build/isr_asm.o build/irq_asm.o build/boot_asm.o build/kernel.o build/string.o build/system.o build/task.o build/allocator.o build/buddy.o build/manager.o build/mem-test.o build/mm.o build/slab.o build/disk.o build/keyboard.o build/serial.o build/timer.o build/ufs.o build/buffer.o build/gdt.o build/idt.o build/exceptions.o build/irq.o build/pic.o build/print.o build/vga_display.o build/pit.o build/list.o -lgcc
+i686-elf-gcc -T linker/linker.ld -o build/bach_k.elf -ffreestanding -O0 -g -nostdlib -Iinclude build/tss_asm.o build/page_asm.o build/gdt_flush_asm.o build/idt_asm.o build/isr_asm.o build/irq_asm.o build/boot_asm.o build/kernel.o build/string.o build/system.o build/task.o build/allocator.o build/buddy.o build/manager.o build/mem-test.o build/mm.o build/slab.o build/disk.o build/keyboard.o build/serial.o build/timer.o build/ufs.o build/buffer.o build/gdt.o build/idt.o build/exceptions.o build/irq.o build/pic.o build/print.o build/vga_display.o build/pit.o build/list.o -lgcc
 [OK] Linked ELF binary
-i686-elf-objcopy -O binary build/yegaos.elf build/yegaos.bin
+i686-elf-objcopy -O binary build/bach_k.elf build/bach_k.bin
 [OK] Created flat binary
 mkdir -p iso/boot/grub
-cp build/yegaos.elf  iso/boot/yegaos.elf
-cp build/yegaos.bin  iso/boot/yegaos.bin
+cp build/bach_k.elf  iso/boot/bach_k.elf
+cp build/bach_k.bin  iso/boot/bach_k.bin
 cp grub/grub.cfg           iso/boot/grub/
-grub-mkrescue -o build/yegaos.iso iso > /dev/null 2>&1
+grub-mkrescue -o build/bach_k.iso iso > /dev/null 2>&1
 [OK] Multiboot compliant
 Serial initialized. Booting...
 kernel_start= 0x00200000
@@ -561,14 +561,13 @@ Boot complete.
 working out hard disk 
 general protection: %04x
 EIP:	%04x:0x0x00000008
-EFLAGS:	0x0x00204384
+EFLAGS:	0x0x00204377
 ESP:	%04x:0x0x00010246
 disk content : A1B2C3D4E5
 initializing buffer cache
 
 inside kmem_cache_create for 
 buffer_head
-size of buffer_head is 36
 displaying buffer cache................
 ================ b_hash 0=================
 <= 96 => <= 92 => <= 88 => <= 84 => <= 80 => <= 76 => <= 72 => <= 68 => <= 64 => <= 60 => <= 56 => <= 52 => <= 48 => <= 44 => <= 40 => <= 36 => <= 32 => <= 28 => <= 24 => <= 20 => <= 16 => <= 12 => <= 8 => <= 4 => <= 0 => 
@@ -578,6 +577,12 @@ displaying buffer cache................
 <= 98 => <= 94 => <= 90 => <= 86 => <= 82 => <= 78 => <= 74 => <= 70 => <= 66 => <= 62 => <= 58 => <= 54 => <= 50 => <= 46 => <= 42 => <= 38 => <= 34 => <= 30 => <= 26 => <= 22 => <= 18 => <= 14 => <= 10 => <= 6 => <= 2 => 
 ================ b_hash 3=================
 <= 99 => <= 95 => <= 91 => <= 87 => <= 83 => <= 79 => <= 75 => <= 71 => <= 67 => <= 63 => <= 59 => <= 55 => <= 51 => <= 47 => <= 43 => <= 39 => <= 35 => <= 31 => <= 27 => <= 23 => <= 19 => <= 15 => <= 11 => <= 7 => <= 3 => 
+================ b_free 4=================
+<= 99 => <= 98 => <= 97 => <= 96 => <= 95 => <= 94 => <= 93 => <= 92 => <= 91 => <= 90 => <= 89 => <= 88 => <= 87 => <= 86 => <= 85 => <= 84 => <= 83 => <= 82 => <= 81 => <= 80 => <= 79 => <= 78 => <= 77 => <= 76 => <= 75 => <= 74 => <= 73 => <= 72 => <= 71 => <= 70 => <= 69 => <= 68 => <= 67 => <= 66 => <= 65 => <= 64 => <= 63 => <= 62 => <= 61 => <= 60 => <= 59 => <= 58 => <= 57 => <= 56 => <= 55 => <= 54 => <= 53 => <= 52 =general protection: %04x
+EIP:	%04x:0x0x00000008
+EFLAGS:	0x0x00204619
+ESP:	%04x:0x0x00010202
+> <= 51 => <= 50 => <= 49 => <= 48 => <= 47 => <= 46 => <= 45 => <= 44 => <= 43 => <= 42 => <= 41 => <= 40 => <= 39 => <= 38 => <= 37 => <= 36 => <= 35 => <= 34 => <= 33 => <= 32 => <= 31 => <= 30 => <= 29 => <= 28 => <= 27 => <= 26 => <= 25 => <= 24 => <= 23 => <= 22 => <= 21 => <= 20 => <= 19 => <= 18 => <= 17 => <= 16 => <= 15 => <= 14 => <= 13 => <= 12 => <= 11 => <= 10 => <= 9 => <= 8 => <= 7 => <= 6 => <= 5 => <= 4 => <= 3 => <= 2 => <= 1 => <= 0 => 
 testing buffer cache .............
 inside getblk 
 getblk hash found 
@@ -589,2586 +594,9 @@ invoed bread for blocknr 16
 inside getblk 
 getblk hash found 
 getblk scenario 1
-invoed bread 2 
-invoed bgeneral protection: %04x
-EIP:	%04x:0x0x00000008
-EFLAGS:	0x0x0020460F
-ESP:	%04x:0x0x00010212
-read 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
 bread completed
-buffer content aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+buffer content aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 cooking fs
-invoed bread for blocknr 1
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-making super
-iCnt: 0, its_block: 2
-invoed bread for blocknr 2
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 0, jCnt: 8, toal_inodes: 2048
-iCnt: 8, its_block: 3
-invoed bread for blocknr 3
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 8, jCnt: 8, toal_inodes: 2048
-iCnt: 16, its_block: 4
-invoed bread for blocknr 4
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 16, jCnt: 8, toal_inodes: 2048
-iCnt: 24, its_block: 5
-invoed bread for blocknr 5
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 24, jCnt: 8, toal_inodes: 2048
-iCnt: 32, its_block: 6
-invoed bread for blocknr 6
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 32, jCnt: 8, toal_inodes: 2048
-iCnt: 40, its_block: 7
-invoed bread for blocknr 7
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 40, jCnt: 8, toal_inodes: 2048
-iCnt: 48, its_block: 8
-invoed bread for blocknr 8
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 48, jCnt: 8, toal_inodes: 2048
-iCnt: 56, its_block: 9
-invoed bread for blocknr 9
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 56, jCnt: 8, toal_inodes: 2048
-iCnt: 64, its_block: 10
-invoed bread for blocknr 10
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 64, jCnt: 8, toal_inodes: 2048
-iCnt: 72, its_block: 11
-invoed bread for blocknr 11
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 72, jCnt: 8, toal_inodes: 2048
-iCnt: 80, its_block: 12
-invoed bread for blocknr 12
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 80, jCnt: 8, toal_inodes: 2048
-iCnt: 88, its_block: 13
-invoed bread for blocknr 13
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 88, jCnt: 8, toal_inodes: 2048
-iCnt: 96, its_block: 14
-invoed bread for blocknr 14
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 96, jCnt: 8, toal_inodes: 2048
-iCnt: 104, its_block: 15
-invoed bread for blocknr 15
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 104, jCnt: 8, toal_inodes: 2048
-iCnt: 112, its_block: 16
-invoed bread for blocknr 16
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 112, jCnt: 8, toal_inodes: 2048
-iCnt: 120, its_block: 17
-invoed bread for blocknr 17
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 120, jCnt: 8, toal_inodes: 2048
-iCnt: 128, its_block: 18
-invoed bread for blocknr 18
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 128, jCnt: 8, toal_inodes: 2048
-iCnt: 136, its_block: 19
-invoed bread for blocknr 19
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 136, jCnt: 8, toal_inodes: 2048
-iCnt: 144, its_block: 20
-invoed bread for blocknr 20
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 144, jCnt: 8, toal_inodes: 2048
-iCnt: 152, its_block: 21
-invoed bread for blocknr 21
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 152, jCnt: 8, toal_inodes: 2048
-iCnt: 160, its_block: 22
-invoed bread for blocknr 22
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 160, jCnt: 8, toal_inodes: 2048
-iCnt: 168, its_block: 23
-invoed bread for blocknr 23
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 168, jCnt: 8, toal_inodes: 2048
-iCnt: 176, its_block: 24
-invoed bread for blocknr 24
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 176, jCnt: 8, toal_inodes: 2048
-iCnt: 184, its_block: 25
-invoed bread for blocknr 25
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 184, jCnt: 8, toal_inodes: 2048
-iCnt: 192, its_block: 26
-invoed bread for blocknr 26
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 192, jCnt: 8, toal_inodes: 2048
-iCnt: 200, its_block: 27
-invoed bread for blocknr 27
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 200, jCnt: 8, toal_inodes: 2048
-iCnt: 208, its_block: 28
-invoed bread for blocknr 28
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 208, jCnt: 8, toal_inodes: 2048
-iCnt: 216, its_block: 29
-invoed bread for blocknr 29
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 216, jCnt: 8, toal_inodes: 2048
-iCnt: 224, its_block: 30
-invoed bread for blocknr 30
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 224, jCnt: 8, toal_inodes: 2048
-iCnt: 232, its_block: 31
-invoed bread for blocknr 31
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 232, jCnt: 8, toal_inodes: 2048
-iCnt: 240, its_block: 32
-invoed bread for blocknr 32
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 240, jCnt: 8, toal_inodes: 2048
-iCnt: 248, its_block: 33
-invoed bread for blocknr 33
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 248, jCnt: 8, toal_inodes: 2048
-iCnt: 256, its_block: 34
-invoed bread for blocknr 34
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 256, jCnt: 8, toal_inodes: 2048
-iCnt: 264, its_block: 35
-invoed bread for blocknr 35
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 264, jCnt: 8, toal_inodes: 2048
-iCnt: 272, its_block: 36
-invoed bread for blocknr 36
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 272, jCnt: 8, toal_inodes: 2048
-iCnt: 280, its_block: 37
-invoed bread for blocknr 37
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 280, jCnt: 8, toal_inodes: 2048
-iCnt: 288, its_block: 38
-invoed bread for blocknr 38
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 288, jCnt: 8, toal_inodes: 2048
-iCnt: 296, its_block: 39
-invoed bread for blocknr 39
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 296, jCnt: 8, toal_inodes: 2048
-iCnt: 304, its_block: 40
-invoed bread for blocknr 40
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 304, jCnt: 8, toal_inodes: 2048
-iCnt: 312, its_block: 41
-invoed bread for blocknr 41
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 312, jCnt: 8, toal_inodes: 2048
-iCnt: 320, its_block: 42
-invoed bread for blocknr 42
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 320, jCnt: 8, toal_inodes: 2048
-iCnt: 328, its_block: 43
-invoed bread for blocknr 43
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 328, jCnt: 8, toal_inodes: 2048
-iCnt: 336, its_block: 44
-invoed bread for blocknr 44
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 336, jCnt: 8, toal_inodes: 2048
-iCnt: 344, its_block: 45
-invoed bread for blocknr 45
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 344, jCnt: 8, toal_inodes: 2048
-iCnt: 352, its_block: 46
-invoed bread for blocknr 46
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 352, jCnt: 8, toal_inodes: 2048
-iCnt: 360, its_block: 47
-invoed bread for blocknr 47
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 360, jCnt: 8, toal_inodes: 2048
-iCnt: 368, its_block: 48
-invoed bread for blocknr 48
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 368, jCnt: 8, toal_inodes: 2048
-iCnt: 376, its_block: 49
-invoed bread for blocknr 49
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 376, jCnt: 8, toal_inodes: 2048
-iCnt: 384, its_block: 50
-invoed bread for blocknr 50
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 384, jCnt: 8, toal_inodes: 2048
-iCnt: 392, its_block: 51
-invoed bread for blocknr 51
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 392, jCnt: 8, toal_inodes: 2048
-iCnt: 400, its_block: 52
-invoed bread for blocknr 52
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 400, jCnt: 8, toal_inodes: 2048
-iCnt: 408, its_block: 53
-invoed bread for blocknr 53
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 408, jCnt: 8, toal_inodes: 2048
-iCnt: 416, its_block: 54
-invoed bread for blocknr 54
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 416, jCnt: 8, toal_inodes: 2048
-iCnt: 424, its_block: 55
-invoed bread for blocknr 55
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 424, jCnt: 8, toal_inodes: 2048
-iCnt: 432, its_block: 56
-invoed bread for blocknr 56
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 432, jCnt: 8, toal_inodes: 2048
-iCnt: 440, its_block: 57
-invoed bread for blocknr 57
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 440, jCnt: 8, toal_inodes: 2048
-iCnt: 448, its_block: 58
-invoed bread for blocknr 58
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 448, jCnt: 8, toal_inodes: 2048
-iCnt: 456, its_block: 59
-invoed bread for blocknr 59
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 456, jCnt: 8, toal_inodes: 2048
-iCnt: 464, its_block: 60
-invoed bread for blocknr 60
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 464, jCnt: 8, toal_inodes: 2048
-iCnt: 472, its_block: 61
-invoed bread for blocknr 61
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 472, jCnt: 8, toal_inodes: 2048
-iCnt: 480, its_block: 62
-invoed bread for blocknr 62
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 480, jCnt: 8, toal_inodes: 2048
-iCnt: 488, its_block: 63
-invoed bread for blocknr 63
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 488, jCnt: 8, toal_inodes: 2048
-iCnt: 496, its_block: 64
-invoed bread for blocknr 64
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 496, jCnt: 8, toal_inodes: 2048
-iCnt: 504, its_block: 65
-invoed bread for blocknr 65
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 504, jCnt: 8, toal_inodes: 2048
-iCnt: 512, its_block: 66
-invoed bread for blocknr 66
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 512, jCnt: 8, toal_inodes: 2048
-iCnt: 520, its_block: 67
-invoed bread for blocknr 67
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 520, jCnt: 8, toal_inodes: 2048
-iCnt: 528, its_block: 68
-invoed bread for blocknr 68
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 528, jCnt: 8, toal_inodes: 2048
-iCnt: 536, its_block: 69
-invoed bread for blocknr 69
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 536, jCnt: 8, toal_inodes: 2048
-iCnt: 544, its_block: 70
-invoed bread for blocknr 70
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 544, jCnt: 8, toal_inodes: 2048
-iCnt: 552, its_block: 71
-invoed bread for blocknr 71
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 552, jCnt: 8, toal_inodes: 2048
-iCnt: 560, its_block: 72
-invoed bread for blocknr 72
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 560, jCnt: 8, toal_inodes: 2048
-iCnt: 568, its_block: 73
-invoed bread for blocknr 73
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 568, jCnt: 8, toal_inodes: 2048
-iCnt: 576, its_block: 74
-invoed bread for blocknr 74
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 576, jCnt: 8, toal_inodes: 2048
-iCnt: 584, its_block: 75
-invoed bread for blocknr 75
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 584, jCnt: 8, toal_inodes: 2048
-iCnt: 592, its_block: 76
-invoed bread for blocknr 76
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 592, jCnt: 8, toal_inodes: 2048
-iCnt: 600, its_block: 77
-invoed bread for blocknr 77
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 600, jCnt: 8, toal_inodes: 2048
-iCnt: 608, its_block: 78
-invoed bread for blocknr 78
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 608, jCnt: 8, toal_inodes: 2048
-iCnt: 616, its_block: 79
-invoed bread for blocknr 79
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 616, jCnt: 8, toal_inodes: 2048
-iCnt: 624, its_block: 80
-invoed bread for blocknr 80
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 624, jCnt: 8, toal_inodes: 2048
-iCnt: 632, its_block: 81
-invoed bread for blocknr 81
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 632, jCnt: 8, toal_inodes: 2048
-iCnt: 640, its_block: 82
-invoed bread for blocknr 82
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 640, jCnt: 8, toal_inodes: 2048
-iCnt: 648, its_block: 83
-invoed bread for blocknr 83
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 648, jCnt: 8, toal_inodes: 2048
-iCnt: 656, its_block: 84
-invoed bread for blocknr 84
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 656, jCnt: 8, toal_inodes: 2048
-iCnt: 664, its_block: 85
-invoed bread for blocknr 85
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 664, jCnt: 8, toal_inodes: 2048
-iCnt: 672, its_block: 86
-invoed bread for blocknr 86
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 672, jCnt: 8, toal_inodes: 2048
-iCnt: 680, its_block: 87
-invoed bread for blocknr 87
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 680, jCnt: 8, toal_inodes: 2048
-iCnt: 688, its_block: 88
-invoed bread for blocknr 88
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 688, jCnt: 8, toal_inodes: 2048
-iCnt: 696, its_block: 89
-invoed bread for blocknr 89
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 696, jCnt: 8, toal_inodes: 2048
-iCnt: 704, its_block: 90
-invoed bread for blocknr 90
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 704, jCnt: 8, toal_inodes: 2048
-iCnt: 712, its_block: 91
-invoed bread for blocknr 91
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 712, jCnt: 8, toal_inodes: 2048
-iCnt: 720, its_block: 92
-invoed bread for blocknr 92
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 720, jCnt: 8, toal_inodes: 2048
-iCnt: 728, its_block: 93
-invoed bread for blocknr 93
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 728, jCnt: 8, toal_inodes: 2048
-iCnt: 736, its_block: 94
-invoed bread for blocknr 94
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 736, jCnt: 8, toal_inodes: 2048
-iCnt: 744, its_block: 95
-invoed bread for blocknr 95
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 744, jCnt: 8, toal_inodes: 2048
-iCnt: 752, its_block: 96
-invoed bread for blocknr 96
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 752, jCnt: 8, toal_inodes: 2048
-iCnt: 760, its_block: 97
-invoed bread for blocknr 97
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 760, jCnt: 8, toal_inodes: 2048
-iCnt: 768, its_block: 98
-invoed bread for blocknr 98
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 768, jCnt: 8, toal_inodes: 2048
-iCnt: 776, its_block: 99
-invoed bread for blocknr 99
-inside getblk 
-getblk hash found 
-getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 776, jCnt: 8, toal_inodes: 2048
-iCnt: 784, its_block: 100
-invoed bread for blocknr 100
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 784, jCnt: 8, toal_inodes: 2048
-iCnt: 792, its_block: 101
-invoed bread for blocknr 101
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 792, jCnt: 8, toal_inodes: 2048
-iCnt: 800, its_block: 102
-invoed bread for blocknr 102
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 800, jCnt: 8, toal_inodes: 2048
-iCnt: 808, its_block: 103
-invoed bread for blocknr 103
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 808, jCnt: 8, toal_inodes: 2048
-iCnt: 816, its_block: 104
-invoed bread for blocknr 104
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 816, jCnt: 8, toal_inodes: 2048
-iCnt: 824, its_block: 105
-invoed bread for blocknr 105
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 824, jCnt: 8, toal_inodes: 2048
-iCnt: 832, its_block: 106
-invoed bread for blocknr 106
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 832, jCnt: 8, toal_inodes: 2048
-iCnt: 840, its_block: 107
-invoed bread for blocknr 107
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 840, jCnt: 8, toal_inodes: 2048
-iCnt: 848, its_block: 108
-invoed bread for blocknr 108
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 848, jCnt: 8, toal_inodes: 2048
-iCnt: 856, its_block: 109
-invoed bread for blocknr 109
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 856, jCnt: 8, toal_inodes: 2048
-iCnt: 864, its_block: 110
-invoed bread for blocknr 110
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 864, jCnt: 8, toal_inodes: 2048
-iCnt: 872, its_block: 111
-invoed bread for blocknr 111
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 872, jCnt: 8, toal_inodes: 2048
-iCnt: 880, its_block: 112
-invoed bread for blocknr 112
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 880, jCnt: 8, toal_inodes: 2048
-iCnt: 888, its_block: 113
-invoed bread for blocknr 113
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 888, jCnt: 8, toal_inodes: 2048
-iCnt: 896, its_block: 114
-invoed bread for blocknr 114
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 896, jCnt: 8, toal_inodes: 2048
-iCnt: 904, its_block: 115
-invoed bread for blocknr 115
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 904, jCnt: 8, toal_inodes: 2048
-iCnt: 912, its_block: 116
-invoed bread for blocknr 116
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 912, jCnt: 8, toal_inodes: 2048
-iCnt: 920, its_block: 117
-invoed bread for blocknr 117
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 920, jCnt: 8, toal_inodes: 2048
-iCnt: 928, its_block: 118
-invoed bread for blocknr 118
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 928, jCnt: 8, toal_inodes: 2048
-iCnt: 936, its_block: 119
-invoed bread for blocknr 119
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 936, jCnt: 8, toal_inodes: 2048
-iCnt: 944, its_block: 120
-invoed bread for blocknr 120
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 944, jCnt: 8, toal_inodes: 2048
-iCnt: 952, its_block: 121
-invoed bread for blocknr 121
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 952, jCnt: 8, toal_inodes: 2048
-iCnt: 960, its_block: 122
-invoed bread for blocknr 122
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 960, jCnt: 8, toal_inodes: 2048
-iCnt: 968, its_block: 123
-invoed bread for blocknr 123
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 968, jCnt: 8, toal_inodes: 2048
-iCnt: 976, its_block: 124
-invoed bread for blocknr 124
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 976, jCnt: 8, toal_inodes: 2048
-iCnt: 984, its_block: 125
-invoed bread for blocknr 125
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 984, jCnt: 8, toal_inodes: 2048
-iCnt: 992, its_block: 126
-invoed bread for blocknr 126
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 992, jCnt: 8, toal_inodes: 2048
-iCnt: 1000, its_block: 127
-invoed bread for blocknr 127
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1000, jCnt: 8, toal_inodes: 2048
-iCnt: 1008, its_block: 128
-invoed bread for blocknr 128
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1008, jCnt: 8, toal_inodes: 2048
-iCnt: 1016, its_block: 129
-invoed bread for blocknr 129
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1016, jCnt: 8, toal_inodes: 2048
-iCnt: 1024, its_block: 130
-invoed bread for blocknr 130
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1024, jCnt: 8, toal_inodes: 2048
-iCnt: 1032, its_block: 131
-invoed bread for blocknr 131
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1032, jCnt: 8, toal_inodes: 2048
-iCnt: 1040, its_block: 132
-invoed bread for blocknr 132
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1040, jCnt: 8, toal_inodes: 2048
-iCnt: 1048, its_block: 133
-invoed bread for blocknr 133
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1048, jCnt: 8, toal_inodes: 2048
-iCnt: 1056, its_block: 134
-invoed bread for blocknr 134
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1056, jCnt: 8, toal_inodes: 2048
-iCnt: 1064, its_block: 135
-invoed bread for blocknr 135
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1064, jCnt: 8, toal_inodes: 2048
-iCnt: 1072, its_block: 136
-invoed bread for blocknr 136
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1072, jCnt: 8, toal_inodes: 2048
-iCnt: 1080, its_block: 137
-invoed bread for blocknr 137
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1080, jCnt: 8, toal_inodes: 2048
-iCnt: 1088, its_block: 138
-invoed bread for blocknr 138
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1088, jCnt: 8, toal_inodes: 2048
-iCnt: 1096, its_block: 139
-invoed bread for blocknr 139
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1096, jCnt: 8, toal_inodes: 2048
-iCnt: 1104, its_block: 140
-invoed bread for blocknr 140
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1104, jCnt: 8, toal_inodes: 2048
-iCnt: 1112, its_block: 141
-invoed bread for blocknr 141
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1112, jCnt: 8, toal_inodes: 2048
-iCnt: 1120, its_block: 142
-invoed bread for blocknr 142
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1120, jCnt: 8, toal_inodes: 2048
-iCnt: 1128, its_block: 143
-invoed bread for blocknr 143
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1128, jCnt: 8, toal_inodes: 2048
-iCnt: 1136, its_block: 144
-invoed bread for blocknr 144
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1136, jCnt: 8, toal_inodes: 2048
-iCnt: 1144, its_block: 145
-invoed bread for blocknr 145
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1144, jCnt: 8, toal_inodes: 2048
-iCnt: 1152, its_block: 146
-invoed bread for blocknr 146
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1152, jCnt: 8, toal_inodes: 2048
-iCnt: 1160, its_block: 147
-invoed bread for blocknr 147
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1160, jCnt: 8, toal_inodes: 2048
-iCnt: 1168, its_block: 148
-invoed bread for blocknr 148
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1168, jCnt: 8, toal_inodes: 2048
-iCnt: 1176, its_block: 149
-invoed bread for blocknr 149
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1176, jCnt: 8, toal_inodes: 2048
-iCnt: 1184, its_block: 150
-invoed bread for blocknr 150
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1184, jCnt: 8, toal_inodes: 2048
-iCnt: 1192, its_block: 151
-invoed bread for blocknr 151
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1192, jCnt: 8, toal_inodes: 2048
-iCnt: 1200, its_block: 152
-invoed bread for blocknr 152
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1200, jCnt: 8, toal_inodes: 2048
-iCnt: 1208, its_block: 153
-invoed bread for blocknr 153
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1208, jCnt: 8, toal_inodes: 2048
-iCnt: 1216, its_block: 154
-invoed bread for blocknr 154
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1216, jCnt: 8, toal_inodes: 2048
-iCnt: 1224, its_block: 155
-invoed bread for blocknr 155
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1224, jCnt: 8, toal_inodes: 2048
-iCnt: 1232, its_block: 156
-invoed bread for blocknr 156
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1232, jCnt: 8, toal_inodes: 2048
-iCnt: 1240, its_block: 157
-invoed bread for blocknr 157
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1240, jCnt: 8, toal_inodes: 2048
-iCnt: 1248, its_block: 158
-invoed bread for blocknr 158
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1248, jCnt: 8, toal_inodes: 2048
-iCnt: 1256, its_block: 159
-invoed bread for blocknr 159
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1256, jCnt: 8, toal_inodes: 2048
-iCnt: 1264, its_block: 160
-invoed bread for blocknr 160
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1264, jCnt: 8, toal_inodes: 2048
-iCnt: 1272, its_block: 161
-invoed bread for blocknr 161
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1272, jCnt: 8, toal_inodes: 2048
-iCnt: 1280, its_block: 162
-invoed bread for blocknr 162
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1280, jCnt: 8, toal_inodes: 2048
-iCnt: 1288, its_block: 163
-invoed bread for blocknr 163
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1288, jCnt: 8, toal_inodes: 2048
-iCnt: 1296, its_block: 164
-invoed bread for blocknr 164
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1296, jCnt: 8, toal_inodes: 2048
-iCnt: 1304, its_block: 165
-invoed bread for blocknr 165
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1304, jCnt: 8, toal_inodes: 2048
-iCnt: 1312, its_block: 166
-invoed bread for blocknr 166
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1312, jCnt: 8, toal_inodes: 2048
-iCnt: 1320, its_block: 167
-invoed bread for blocknr 167
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1320, jCnt: 8, toal_inodes: 2048
-iCnt: 1328, its_block: 168
-invoed bread for blocknr 168
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1328, jCnt: 8, toal_inodes: 2048
-iCnt: 1336, its_block: 169
-invoed bread for blocknr 169
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1336, jCnt: 8, toal_inodes: 2048
-iCnt: 1344, its_block: 170
-invoed bread for blocknr 170
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1344, jCnt: 8, toal_inodes: 2048
-iCnt: 1352, its_block: 171
-invoed bread for blocknr 171
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1352, jCnt: 8, toal_inodes: 2048
-iCnt: 1360, its_block: 172
-invoed bread for blocknr 172
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1360, jCnt: 8, toal_inodes: 2048
-iCnt: 1368, its_block: 173
-invoed bread for blocknr 173
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1368, jCnt: 8, toal_inodes: 2048
-iCnt: 1376, its_block: 174
-invoed bread for blocknr 174
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1376, jCnt: 8, toal_inodes: 2048
-iCnt: 1384, its_block: 175
-invoed bread for blocknr 175
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1384, jCnt: 8, toal_inodes: 2048
-iCnt: 1392, its_block: 176
-invoed bread for blocknr 176
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1392, jCnt: 8, toal_inodes: 2048
-iCnt: 1400, its_block: 177
-invoed bread for blocknr 177
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1400, jCnt: 8, toal_inodes: 2048
-iCnt: 1408, its_block: 178
-invoed bread for blocknr 178
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1408, jCnt: 8, toal_inodes: 2048
-iCnt: 1416, its_block: 179
-invoed bread for blocknr 179
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1416, jCnt: 8, toal_inodes: 2048
-iCnt: 1424, its_block: 180
-invoed bread for blocknr 180
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1424, jCnt: 8, toal_inodes: 2048
-iCnt: 1432, its_block: 181
-invoed bread for blocknr 181
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1432, jCnt: 8, toal_inodes: 2048
-iCnt: 1440, its_block: 182
-invoed bread for blocknr 182
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1440, jCnt: 8, toal_inodes: 2048
-iCnt: 1448, its_block: 183
-invoed bread for blocknr 183
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1448, jCnt: 8, toal_inodes: 2048
-iCnt: 1456, its_block: 184
-invoed bread for blocknr 184
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1456, jCnt: 8, toal_inodes: 2048
-iCnt: 1464, its_block: 185
-invoed bread for blocknr 185
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1464, jCnt: 8, toal_inodes: 2048
-iCnt: 1472, its_block: 186
-invoed bread for blocknr 186
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1472, jCnt: 8, toal_inodes: 2048
-iCnt: 1480, its_block: 187
-invoed bread for blocknr 187
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1480, jCnt: 8, toal_inodes: 2048
-iCnt: 1488, its_block: 188
-invoed bread for blocknr 188
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1488, jCnt: 8, toal_inodes: 2048
-iCnt: 1496, its_block: 189
-invoed bread for blocknr 189
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1496, jCnt: 8, toal_inodes: 2048
-iCnt: 1504, its_block: 190
-invoed bread for blocknr 190
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1504, jCnt: 8, toal_inodes: 2048
-iCnt: 1512, its_block: 191
-invoed bread for blocknr 191
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1512, jCnt: 8, toal_inodes: 2048
-iCnt: 1520, its_block: 192
-invoed bread for blocknr 192
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1520, jCnt: 8, toal_inodes: 2048
-iCnt: 1528, its_block: 193
-invoed bread for blocknr 193
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1528, jCnt: 8, toal_inodes: 2048
-iCnt: 1536, its_block: 194
-invoed bread for blocknr 194
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1536, jCnt: 8, toal_inodes: 2048
-iCnt: 1544, its_block: 195
-invoed bread for blocknr 195
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1544, jCnt: 8, toal_inodes: 2048
-iCnt: 1552, its_block: 196
-invoed bread for blocknr 196
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1552, jCnt: 8, toal_inodes: 2048
-iCnt: 1560, its_block: 197
-invoed bread for blocknr 197
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1560, jCnt: 8, toal_inodes: 2048
-iCnt: 1568, its_block: 198
-invoed bread for blocknr 198
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1568, jCnt: 8, toal_inodes: 2048
-iCnt: 1576, its_block: 199
-invoed bread for blocknr 199
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1576, jCnt: 8, toal_inodes: 2048
-iCnt: 1584, its_block: 200
-invoed bread for blocknr 200
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1584, jCnt: 8, toal_inodes: 2048
-iCnt: 1592, its_block: 201
-invoed bread for blocknr 201
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1592, jCnt: 8, toal_inodes: 2048
-iCnt: 1600, its_block: 202
-invoed bread for blocknr 202
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1600, jCnt: 8, toal_inodes: 2048
-iCnt: 1608, its_block: 203
-invoed bread for blocknr 203
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1608, jCnt: 8, toal_inodes: 2048
-iCnt: 1616, its_block: 204
-invoed bread for blocknr 204
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1616, jCnt: 8, toal_inodes: 2048
-iCnt: 1624, its_block: 205
-invoed bread for blocknr 205
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1624, jCnt: 8, toal_inodes: 2048
-iCnt: 1632, its_block: 206
-invoed bread for blocknr 206
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1632, jCnt: 8, toal_inodes: 2048
-iCnt: 1640, its_block: 207
-invoed bread for blocknr 207
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1640, jCnt: 8, toal_inodes: 2048
-iCnt: 1648, its_block: 208
-invoed bread for blocknr 208
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1648, jCnt: 8, toal_inodes: 2048
-iCnt: 1656, its_block: 209
-invoed bread for blocknr 209
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1656, jCnt: 8, toal_inodes: 2048
-iCnt: 1664, its_block: 210
-invoed bread for blocknr 210
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1664, jCnt: 8, toal_inodes: 2048
-iCnt: 1672, its_block: 211
-invoed bread for blocknr 211
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1672, jCnt: 8, toal_inodes: 2048
-iCnt: 1680, its_block: 212
-invoed bread for blocknr 212
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1680, jCnt: 8, toal_inodes: 2048
-iCnt: 1688, its_block: 213
-invoed bread for blocknr 213
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1688, jCnt: 8, toal_inodes: 2048
-iCnt: 1696, its_block: 214
-invoed bread for blocknr 214
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1696, jCnt: 8, toal_inodes: 2048
-iCnt: 1704, its_block: 215
-invoed bread for blocknr 215
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1704, jCnt: 8, toal_inodes: 2048
-iCnt: 1712, its_block: 216
-invoed bread for blocknr 216
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1712, jCnt: 8, toal_inodes: 2048
-iCnt: 1720, its_block: 217
-invoed bread for blocknr 217
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1720, jCnt: 8, toal_inodes: 2048
-iCnt: 1728, its_block: 218
-invoed bread for blocknr 218
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1728, jCnt: 8, toal_inodes: 2048
-iCnt: 1736, its_block: 219
-invoed bread for blocknr 219
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1736, jCnt: 8, toal_inodes: 2048
-iCnt: 1744, its_block: 220
-invoed bread for blocknr 220
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1744, jCnt: 8, toal_inodes: 2048
-iCnt: 1752, its_block: 221
-invoed bread for blocknr 221
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1752, jCnt: 8, toal_inodes: 2048
-iCnt: 1760, its_block: 222
-invoed bread for blocknr 222
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1760, jCnt: 8, toal_inodes: 2048
-iCnt: 1768, its_block: 223
-invoed bread for blocknr 223
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1768, jCnt: 8, toal_inodes: 2048
-iCnt: 1776, its_block: 224
-invoed bread for blocknr 224
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1776, jCnt: 8, toal_inodes: 2048
-iCnt: 1784, its_block: 225
-invoed bread for blocknr 225
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1784, jCnt: 8, toal_inodes: 2048
-iCnt: 1792, its_block: 226
-invoed bread for blocknr 226
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1792, jCnt: 8, toal_inodes: 2048
-iCnt: 1800, its_block: 227
-invoed bread for blocknr 227
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1800, jCnt: 8, toal_inodes: 2048
-iCnt: 1808, its_block: 228
-invoed bread for blocknr 228
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1808, jCnt: 8, toal_inodes: 2048
-iCnt: 1816, its_block: 229
-invoed bread for blocknr 229
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1816, jCnt: 8, toal_inodes: 2048
-iCnt: 1824, its_block: 230
-invoed bread for blocknr 230
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1824, jCnt: 8, toal_inodes: 2048
-iCnt: 1832, its_block: 231
-invoed bread for blocknr 231
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1832, jCnt: 8, toal_inodes: 2048
-iCnt: 1840, its_block: 232
-invoed bread for blocknr 232
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1840, jCnt: 8, toal_inodes: 2048
-iCnt: 1848, its_block: 233
-invoed bread for blocknr 233
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1848, jCnt: 8, toal_inodes: 2048
-iCnt: 1856, its_block: 234
-invoed bread for blocknr 234
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1856, jCnt: 8, toal_inodes: 2048
-iCnt: 1864, its_block: 235
-invoed bread for blocknr 235
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1864, jCnt: 8, toal_inodes: 2048
-iCnt: 1872, its_block: 236
-invoed bread for blocknr 236
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1872, jCnt: 8, toal_inodes: 2048
-iCnt: 1880, its_block: 237
-invoed bread for blocknr 237
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1880, jCnt: 8, toal_inodes: 2048
-iCnt: 1888, its_block: 238
-invoed bread for blocknr 238
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1888, jCnt: 8, toal_inodes: 2048
-iCnt: 1896, its_block: 239
-invoed bread for blocknr 239
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1896, jCnt: 8, toal_inodes: 2048
-iCnt: 1904, its_block: 240
-invoed bread for blocknr 240
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1904, jCnt: 8, toal_inodes: 2048
-iCnt: 1912, its_block: 241
-invoed bread for blocknr 241
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1912, jCnt: 8, toal_inodes: 2048
-iCnt: 1920, its_block: 242
-invoed bread for blocknr 242
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1920, jCnt: 8, toal_inodes: 2048
-iCnt: 1928, its_block: 243
-invoed bread for blocknr 243
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1928, jCnt: 8, toal_inodes: 2048
-iCnt: 1936, its_block: 244
-invoed bread for blocknr 244
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1936, jCnt: 8, toal_inodes: 2048
-iCnt: 1944, its_block: 245
-invoed bread for blocknr 245
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1944, jCnt: 8, toal_inodes: 2048
-iCnt: 1952, its_block: 246
-invoed bread for blocknr 246
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1952, jCnt: 8, toal_inodes: 2048
-iCnt: 1960, its_block: 247
-invoed bread for blocknr 247
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1960, jCnt: 8, toal_inodes: 2048
-iCnt: 1968, its_block: 248
-invoed bread for blocknr 248
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1968, jCnt: 8, toal_inodes: 2048
-iCnt: 1976, its_block: 249
-invoed bread for blocknr 249
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1976, jCnt: 8, toal_inodes: 2048
-iCnt: 1984, its_block: 250
-invoed bread for blocknr 250
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1984, jCnt: 8, toal_inodes: 2048
-iCnt: 1992, its_block: 251
-invoed bread for blocknr 251
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 1992, jCnt: 8, toal_inodes: 2048
-iCnt: 2000, its_block: 252
-invoed bread for blocknr 252
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 2000, jCnt: 8, toal_inodes: 2048
-iCnt: 2008, its_block: 253
-invoed bread for blocknr 253
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 2008, jCnt: 8, toal_inodes: 2048
-iCnt: 2016, its_block: 254
-invoed bread for blocknr 254
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 2016, jCnt: 8, toal_inodes: 2048
-iCnt: 2024, its_block: 255
-invoed bread for blocknr 255
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 2024, jCnt: 8, toal_inodes: 2048
-iCnt: 2032, its_block: 256
-invoed bread for blocknr 256
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 2032, jCnt: 8, toal_inodes: 2048
-iCnt: 2040, its_block: 257
-invoed bread for blocknr 257
-inside getblk 
-block not on hash queue
-getblk scenario 2
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
-iCnt: 2040, jCnt: 8, toal_inodes: 2048
 initializing inode cache 
 
 inside kmem_cache_create for 
@@ -3191,10 +619,6 @@ invoed bread for blocknr 1
 inside getblk 
 getblk hash found 
 getblk scenario 1
-invoed bread 2 
-invoed bread 3 
-invoking disk_read inside bread
-invoking disk_read compledted bread
 ========== UFS SUPER BLOCK ==========
 Filesystem size        : 8
 Inode list size        : 50
@@ -3208,4 +632,1597 @@ DILB start block       : 2
 DILB end block         : 257
 Free inode list        : 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 
 =====================================
+tesint dilb==========================
+invoed bread for blocknr 2
+inside getblk 
+getblk hash found 
+getblk scenario 1
+jCnt : 0, inode: 0, imode: 0
+jCnt : 1, inode: 1, imode: 0
+jCnt : 2, inode: 2, imode: 0
+jCnt : 3, inode: 3, imode: 0
+jCnt : 4, inode: 0, imode: 12609
+jCnt : 5, inode: 0, imode: 0
+jCnt : 6, inode: 0, imode: 0
+jCnt : 7, inode: 0, imode: 0
+invoed bread for blocknr 3
+inside getblk 
+getblk hash found 
+getblk scenario 1
+jCnt : 0, inode: 8, imode: 0
+jCnt : 1, inode: 9, imode: 0
+jCnt : 2, inode: 10, imode: 0
+jCnt : 3, inode: 11, imode: 0
+jCnt : 4, inode: 12, imode: 0
+jCnt : 5, inode: 13, imode: 0
+jCnt : 6, inode: 14, imode: 0
+jCnt : 7, inode: 15, imode: 0
+done tesint dilb==========================
+testing data blocks==================
+invoed bread for blocknr 513
+inside getblk 
+block not on hash queue
+getblk scenario 2
+jCnt : 0, block: 769
+jCnt : 1, block: 768
+jCnt : 2, block: 767
+jCnt : 3, block: 766
+jCnt : 4, block: 765
+jCnt : 5, block: 764
+jCnt : 6, block: 763
+jCnt : 7, block: 762
+jCnt : 8, block: 761
+jCnt : 9, block: 760
+jCnt : 10, block: 759
+jCnt : 11, block: 758
+jCnt : 12, block: 757
+jCnt : 13, block: 756
+jCnt : 14, block: 755
+jCnt : 15, block: 754
+jCnt : 16, block: 753
+jCnt : 17, block: 752
+jCnt : 18, block: 751
+jCnt : 19, block: 750
+jCnt : 20, block: 749
+jCnt : 21, block: 748
+jCnt : 22, block: 747
+jCnt : 23, block: 746
+jCnt : 24, block: 745
+jCnt : 25, block: 744
+jCnt : 26, block: 743
+jCnt : 27, block: 742
+jCnt : 28, block: 741
+jCnt : 29, block: 740
+jCnt : 30, block: 739
+jCnt : 31, block: 738
+jCnt : 32, block: 737
+jCnt : 33, block: 736
+jCnt : 34, block: 735
+jCnt : 35, block: 734
+jCnt : 36, block: 733
+jCnt : 37, block: 732
+jCnt : 38, block: 731
+jCnt : 39, block: 730
+jCnt : 40, block: 729
+jCnt : 41, block: 728
+jCnt : 42, block: 727
+jCnt : 43, block: 726
+jCnt : 44, block: 725
+jCnt : 45, block: 724
+jCnt : 46, block: 723
+jCnt : 47, block: 722
+jCnt : 48, block: 721
+jCnt : 49, block: 720
+jCnt : 50, block: 719
+jCnt : 51, block: 718
+jCnt : 52, block: 717
+jCnt : 53, block: 716
+jCnt : 54, block: 715
+jCnt : 55, block: 714
+jCnt : 56, block: 713
+jCnt : 57, block: 712
+jCnt : 58, block: 711
+jCnt : 59, block: 710
+jCnt : 60, block: 709
+jCnt : 61, block: 708
+jCnt : 62, block: 707
+jCnt : 63, block: 706
+jCnt : 64, block: 705
+jCnt : 65, block: 704
+jCnt : 66, block: 703
+jCnt : 67, block: 702
+jCnt : 68, block: 701
+jCnt : 69, block: 700
+jCnt : 70, block: 699
+jCnt : 71, block: 698
+jCnt : 72, block: 697
+jCnt : 73, block: 696
+jCnt : 74, block: 695
+jCnt : 75, block: 694
+jCnt : 76, block: 693
+jCnt : 77, block: 692
+jCnt : 78, block: 691
+jCnt : 79, block: 690
+jCnt : 80, block: 689
+jCnt : 81, block: 688
+jCnt : 82, block: 687
+jCnt : 83, block: 686
+jCnt : 84, block: 685
+jCnt : 85, block: 684
+jCnt : 86, block: 683
+jCnt : 87, block: 682
+jCnt : 88, block: 681
+jCnt : 89, block: 680
+jCnt : 90, block: 679
+jCnt : 91, block: 678
+jCnt : 92, block: 677
+jCnt : 93, block: 676
+jCnt : 94, block: 675
+jCnt : 95, block: 674
+jCnt : 96, block: 673
+jCnt : 97, block: 672
+jCnt : 98, block: 671
+jCnt : 99, block: 670
+jCnt : 100, block: 669
+jCnt : 101, block: 668
+jCnt : 102, block: 667
+jCnt : 103, block: 666
+jCnt : 104, block: 665
+jCnt : 105, block: 664
+jCnt : 106, block: 663
+jCnt : 107, block: 662
+jCnt : 108, block: 661
+jCnt : 109, block: 660
+jCnt : 110, block: 659
+jCnt : 111, block: 658
+jCnt : 112, block: 657
+jCnt : 113, block: 656
+jCnt : 114, block: 655
+jCnt : 115, block: 654
+jCnt : 116, block: 653
+jCnt : 117, block: 652
+jCnt : 118, block: 651
+jCnt : 119, block: 650
+jCnt : 120, block: 649
+jCnt : 121, block: 648
+jCnt : 122, block: 647
+jCnt : 123, block: 646
+jCnt : 124, block: 645
+jCnt : 125, block: 644
+jCnt : 126, block: 643
+jCnt : 127, block: 642
+jCnt : 128, block: 641
+jCnt : 129, block: 640
+jCnt : 130, block: 639
+jCnt : 131, block: 638
+jCnt : 132, block: 637
+jCnt : 133, block: 636
+jCnt : 134, block: 635
+jCnt : 135, block: 634
+jCnt : 136, block: 633
+jCnt : 137, block: 632
+jCnt : 138, block: 631
+jCnt : 139, block: 630
+jCnt : 140, block: 629
+jCnt : 141, block: 628
+jCnt : 142, block: 627
+jCnt : 143, block: 626
+jCnt : 144, block: 625
+jCnt : 145, block: 624
+jCnt : 146, block: 623
+jCnt : 147, block: 622
+jCnt : 148, block: 621
+jCnt : 149, block: 620
+jCnt : 150, block: 619
+jCnt : 151, block: 618
+jCnt : 152, block: 617
+jCnt : 153, block: 616
+jCnt : 154, block: 615
+jCnt : 155, block: 614
+jCnt : 156, block: 613
+jCnt : 157, block: 612
+jCnt : 158, block: 611
+jCnt : 159, block: 610
+jCnt : 160, block: 609
+jCnt : 161, block: 608
+jCnt : 162, block: 607
+jCnt : 163, block: 606
+jCnt : 164, block: 605
+jCnt : 165, block: 604
+jCnt : 166, block: 603
+jCnt : 167, block: 602
+jCnt : 168, block: 601
+jCnt : 169, block: 600
+jCnt : 170, block: 599
+jCnt : 171, block: 598
+jCnt : 172, block: 597
+jCnt : 173, block: 596
+jCnt : 174, block: 595
+jCnt : 175, block: 594
+jCnt : 176, block: 593
+jCnt : 177, block: 592
+jCnt : 178, block: 591
+jCnt : 179, block: 590
+jCnt : 180, block: 589
+jCnt : 181, block: 588
+jCnt : 182, block: 587
+jCnt : 183, block: 586
+jCnt : 184, block: 585
+jCnt : 185, block: 584
+jCnt : 186, block: 583
+jCnt : 187, block: 582
+jCnt : 188, block: 581
+jCnt : 189, block: 580
+jCnt : 190, block: 579
+jCnt : 191, block: 578
+jCnt : 192, block: 577
+jCnt : 193, block: 576
+jCnt : 194, block: 575
+jCnt : 195, block: 574
+jCnt : 196, block: 573
+jCnt : 197, block: 572
+jCnt : 198, block: 571
+jCnt : 199, block: 570
+jCnt : 200, block: 569
+jCnt : 201, block: 568
+jCnt : 202, block: 567
+jCnt : 203, block: 566
+jCnt : 204, block: 565
+jCnt : 205, block: 564
+jCnt : 206, block: 563
+jCnt : 207, block: 562
+jCnt : 208, block: 561
+jCnt : 209, block: 560
+jCnt : 210, block: 559
+jCnt : 211, block: 558
+jCnt : 212, block: 557
+jCnt : 213, block: 556
+jCnt : 214, block: 555
+jCnt : 215, block: 554
+jCnt : 216, block: 553
+jCnt : 217, block: 552
+jCnt : 218, block: 551
+jCnt : 219, block: 550
+jCnt : 220, block: 549
+jCnt : 221, block: 548
+jCnt : 222, block: 547
+jCnt : 223, block: 546
+jCnt : 224, block: 545
+jCnt : 225, block: 544
+jCnt : 226, block: 543
+jCnt : 227, block: 542
+jCnt : 228, block: 541
+jCnt : 229, block: 540
+jCnt : 230, block: 539
+jCnt : 231, block: 538
+jCnt : 232, block: 537
+jCnt : 233, block: 536
+jCnt : 234, block: 535
+jCnt : 235, block: 534
+jCnt : 236, block: 533
+jCnt : 237, block: 532
+jCnt : 238, block: 531
+jCnt : 239, block: 530
+jCnt : 240, block: 529
+jCnt : 241, block: 528
+jCnt : 242, block: 527
+jCnt : 243, block: 526
+jCnt : 244, block: 525
+jCnt : 245, block: 524
+jCnt : 246, block: 523
+jCnt : 247, block: 522
+jCnt : 248, block: 521
+jCnt : 249, block: 520
+jCnt : 250, block: 519
+jCnt : 251, block: 518
+jCnt : 252, block: 517
+jCnt : 253, block: 516
+jCnt : 254, block: 515
+jCnt : 255, block: 514
+invoed bread for blocknr 769
+inside getblk 
+block not on hash queue
+getblk scenario 2
+jCnt : 0, block: 1025
+jCnt : 1, block: 1024
+jCnt : 2, block: 1023
+jCnt : 3, block: 1022
+jCnt : 4, block: 1021
+jCnt : 5, block: 1020
+jCnt : 6, block: 1019
+jCnt : 7, block: 1018
+jCnt : 8, block: 1017
+jCnt : 9, block: 1016
+jCnt : 10, block: 1015
+jCnt : 11, block: 1014
+jCnt : 12, block: 1013
+jCnt : 13, block: 1012
+jCnt : 14, block: 1011
+jCnt : 15, block: 1010
+jCnt : 16, block: 1009
+jCnt : 17, block: 1008
+jCnt : 18, block: 1007
+jCnt : 19, block: 1006
+jCnt : 20, block: 1005
+jCnt : 21, block: 1004
+jCnt : 22, block: 1003
+jCnt : 23, block: 1002
+jCnt : 24, block: 1001
+jCnt : 25, block: 1000
+jCnt : 26, block: 999
+jCnt : 27, block: 998
+jCnt : 28, block: 997
+jCnt : 29, block: 996
+jCnt : 30, block: 995
+jCnt : 31, block: 994
+jCnt : 32, block: 993
+jCnt : 33, block: 992
+jCnt : 34, block: 991
+jCnt : 35, block: 990
+jCnt : 36, block: 989
+jCnt : 37, block: 988
+jCnt : 38, block: 987
+jCnt : 39, block: 986
+jCnt : 40, block: 985
+jCnt : 41, block: 984
+jCnt : 42, block: 983
+jCnt : 43, block: 982
+jCnt : 44, block: 981
+jCnt : 45, block: 980
+jCnt : 46, block: 979
+jCnt : 47, block: 978
+jCnt : 48, block: 977
+jCnt : 49, block: 976
+jCnt : 50, block: 975
+jCnt : 51, block: 974
+jCnt : 52, block: 973
+jCnt : 53, block: 972
+jCnt : 54, block: 971
+jCnt : 55, block: 970
+jCnt : 56, block: 969
+jCnt : 57, block: 968
+jCnt : 58, block: 967
+jCnt : 59, block: 966
+jCnt : 60, block: 965
+jCnt : 61, block: 964
+jCnt : 62, block: 963
+jCnt : 63, block: 962
+jCnt : 64, block: 961
+jCnt : 65, block: 960
+jCnt : 66, block: 959
+jCnt : 67, block: 958
+jCnt : 68, block: 957
+jCnt : 69, block: 956
+jCnt : 70, block: 955
+jCnt : 71, block: 954
+jCnt : 72, block: 953
+jCnt : 73, block: 952
+jCnt : 74, block: 951
+jCnt : 75, block: 950
+jCnt : 76, block: 949
+jCnt : 77, block: 948
+jCnt : 78, block: 947
+jCnt : 79, block: 946
+jCnt : 80, block: 945
+jCnt : 81, block: 944
+jCnt : 82, block: 943
+jCnt : 83, block: 942
+jCnt : 84, block: 941
+jCnt : 85, block: 940
+jCnt : 86, block: 939
+jCnt : 87, block: 938
+jCnt : 88, block: 937
+jCnt : 89, block: 936
+jCnt : 90, block: 935
+jCnt : 91, block: 934
+jCnt : 92, block: 933
+jCnt : 93, block: 932
+jCnt : 94, block: 931
+jCnt : 95, block: 930
+jCnt : 96, block: 929
+jCnt : 97, block: 928
+jCnt : 98, block: 927
+jCnt : 99, block: 926
+jCnt : 100, block: 925
+jCnt : 101, block: 924
+jCnt : 102, block: 923
+jCnt : 103, block: 922
+jCnt : 104, block: 921
+jCnt : 105, block: 920
+jCnt : 106, block: 919
+jCnt : 107, block: 918
+jCnt : 108, block: 917
+jCnt : 109, block: 916
+jCnt : 110, block: 915
+jCnt : 111, block: 914
+jCnt : 112, block: 913
+jCnt : 113, block: 912
+jCnt : 114, block: 911
+jCnt : 115, block: 910
+jCnt : 116, block: 909
+jCnt : 117, block: 908
+jCnt : 118, block: 907
+jCnt : 119, block: 906
+jCnt : 120, block: 905
+jCnt : 121, block: 904
+jCnt : 122, block: 903
+jCnt : 123, block: 902
+jCnt : 124, block: 901
+jCnt : 125, block: 900
+jCnt : 126, block: 899
+jCnt : 127, block: 898
+jCnt : 128, block: 897
+jCnt : 129, block: 896
+jCnt : 130, block: 895
+jCnt : 131, block: 894
+jCnt : 132, block: 893
+jCnt : 133, block: 892
+jCnt : 134, block: 891
+jCnt : 135, block: 890
+jCnt : 136, block: 889
+jCnt : 137, block: 888
+jCnt : 138, block: 887
+jCnt : 139, block: 886
+jCnt : 140, block: 885
+jCnt : 141, block: 884
+jCnt : 142, block: 883
+jCnt : 143, block: 882
+jCnt : 144, block: 881
+jCnt : 145, block: 880
+jCnt : 146, block: 879
+jCnt : 147, block: 878
+jCnt : 148, block: 877
+jCnt : 149, block: 876
+jCnt : 150, block: 875
+jCnt : 151, block: 874
+jCnt : 152, block: 873
+jCnt : 153, block: 872
+jCnt : 154, block: 871
+jCnt : 155, block: 870
+jCnt : 156, block: 869
+jCnt : 157, block: 868
+jCnt : 158, block: 867
+jCnt : 159, block: 866
+jCnt : 160, block: 865
+jCnt : 161, block: 864
+jCnt : 162, block: 863
+jCnt : 163, block: 862
+jCnt : 164, block: 861
+jCnt : 165, block: 860
+jCnt : 166, block: 859
+jCnt : 167, block: 858
+jCnt : 168, block: 857
+jCnt : 169, block: 856
+jCnt : 170, block: 855
+jCnt : 171, block: 854
+jCnt : 172, block: 853
+jCnt : 173, block: 852
+jCnt : 174, block: 851
+jCnt : 175, block: 850
+jCnt : 176, block: 849
+jCnt : 177, block: 848
+jCnt : 178, block: 847
+jCnt : 179, block: 846
+jCnt : 180, block: 845
+jCnt : 181, block: 844
+jCnt : 182, block: 843
+jCnt : 183, block: 842
+jCnt : 184, block: 841
+jCnt : 185, block: 840
+jCnt : 186, block: 839
+jCnt : 187, block: 838
+jCnt : 188, block: 837
+jCnt : 189, block: 836
+jCnt : 190, block: 835
+jCnt : 191, block: 834
+jCnt : 192, block: 833
+jCnt : 193, block: 832
+jCnt : 194, block: 831
+jCnt : 195, block: 830
+jCnt : 196, block: 829
+jCnt : 197, block: 828
+jCnt : 198, block: 827
+jCnt : 199, block: 826
+jCnt : 200, block: 825
+jCnt : 201, block: 824
+jCnt : 202, block: 823
+jCnt : 203, block: 822
+jCnt : 204, block: 821
+jCnt : 205, block: 820
+jCnt : 206, block: 819
+jCnt : 207, block: 818
+jCnt : 208, block: 817
+jCnt : 209, block: 816
+jCnt : 210, block: 815
+jCnt : 211, block: 814
+jCnt : 212, block: 813
+jCnt : 213, block: 812
+jCnt : 214, block: 811
+jCnt : 215, block: 810
+jCnt : 216, block: 809
+jCnt : 217, block: 808
+jCnt : 218, block: 807
+jCnt : 219, block: 806
+jCnt : 220, block: 805
+jCnt : 221, block: 804
+jCnt : 222, block: 803
+jCnt : 223, block: 802
+jCnt : 224, block: 801
+jCnt : 225, block: 800
+jCnt : 226, block: 799
+jCnt : 227, block: 798
+jCnt : 228, block: 797
+jCnt : 229, block: 796
+jCnt : 230, block: 795
+jCnt : 231, block: 794
+jCnt : 232, block: 793
+jCnt : 233, block: 792
+jCnt : 234, block: 791
+jCnt : 235, block: 790
+jCnt : 236, block: 789
+jCnt : 237, block: 788
+jCnt : 238, block: 787
+jCnt : 239, block: 786
+jCnt : 240, block: 785
+jCnt : 241, block: 784
+jCnt : 242, block: 783
+jCnt : 243, block: 782
+jCnt : 244, block: 781
+jCnt : 245, block: 780
+jCnt : 246, block: 779
+jCnt : 247, block: 778
+jCnt : 248, block: 777
+jCnt : 249, block: 776
+jCnt : 250, block: 775
+jCnt : 251, block: 774
+jCnt : 252, block: 773
+jCnt : 253, block: 772
+jCnt : 254, block: 771
+jCnt : 255, block: 770
+done testing data blocks==================
+testing alloc and free===========
+invoed bread for blocknr 513
+inside getblk 
+getblk hash found 
+getblk scenario 1
+super free block is empty , now filling data from blkno: 513
+inside getblk 
+getblk hash found 
+getblk scenario 1
+balloc got me 513
+round 0  finished================
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 514
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 515
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 516
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 517
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 518
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 519
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 520
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 521
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 522
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 523
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 524
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 525
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 526
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 527
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 528
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 529
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 530
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 531
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 532
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 533
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 534
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 535
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 536
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 537
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 538
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 539
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 540
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 541
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 542
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 543
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 544
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 545
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 546
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 547
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 548
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 549
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 550
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 551
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 552
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 553
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 554
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 555
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 556
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 557
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 558
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 559
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 560
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 561
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 562
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 563
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 564
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 565
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 566
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 567
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 568
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 569
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 570
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 571
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 572
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 573
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 574
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 575
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 576
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 577
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 578
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 579
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 580
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 581
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 582
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 583
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 584
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 585
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 586
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 587
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 588
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 589
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 590
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 591
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 592
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 593
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 594
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 595
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 596
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 597
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 598
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 599
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 600
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 601
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 602
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 603
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 604
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 605
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 606
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 607
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 608
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 609
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 610
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 611
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 612
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 613
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 614
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 615
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 616
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 617
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 618
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 619
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 620
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 621
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 622
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 623
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 624
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 625
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 626
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 627
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 628
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 629
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 630
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 631
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 632
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 633
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 634
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 635
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 636
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 637
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 638
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 639
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 640
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 641
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 642
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 643
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 644
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 645
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 646
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 647
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 648
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 649
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 650
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 651
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 652
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 653
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 654
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 655
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 656
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 657
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 658
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 659
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 660
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 661
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 662
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 663
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 664
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 665
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 666
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 667
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 668
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 669
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 670
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 671
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 672
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 673
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 674
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 675
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 676
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 677
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 678
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 679
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 680
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 681
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 682
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 683
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 684
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 685
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 686
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 687
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 688
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 689
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 690
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 691
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 692
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 693
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 694
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 695
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 696
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 697
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 698
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 699
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 700
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 701
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 702
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 703
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 704
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 705
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 706
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 707
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 708
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 709
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 710
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 711
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 712
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 713
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 714
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 715
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 716
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 717
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 718
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 719
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 720
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 721
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 722
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 723
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 724
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 725
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 726
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 727
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 728
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 729
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 730
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 731
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 732
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 733
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 734
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 735
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 736
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 737
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 738
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 739
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 740
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 741
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 742
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 743
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 744
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 745
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 746
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 747
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 748
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 749
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 750
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 751
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 752
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 753
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 754
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 755
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 756
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 757
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 758
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 759
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 760
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 761
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 762
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 763
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 764
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 765
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 766
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 767
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 768
+invoed bread for blocknr 769
+inside getblk 
+block not on hash queue
+getblk scenario 2
+super free block is empty , now filling data from blkno: 769
+inside getblk 
+getblk hash found 
+getblk scenario 1
+balloc got me 769
+round 0  finished================
+inside getblk 
+block not on hash queue
+getblk scenario 2
+balloc got me 770
 booted..................

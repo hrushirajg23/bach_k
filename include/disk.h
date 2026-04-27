@@ -12,5 +12,6 @@ void disk_read(uint32_t lba, uint8_t *buf);
 void disk_read_bootloader(uint32_t lba, uint8_t *buf, uint8_t chunk);
 
 void test_disk(void);
-
+int disk_read_blk(uint32_t block_num, uint8_t *buf);
+int disk_write_blk(uint32_t block_num, uint8_t *buf);
 #endif
