@@ -118,7 +118,7 @@ ret_from_sys_call:
  * ----------------------------------------------------------------------- */
 handle_sig:
     movl current, %eax
-    movzbl SIGHANDLE_OFF(%eax), %edx
+    movl SIGHANDLE_OFF(%eax), %edx
     movl SIG_FN_OFF(%eax,%edx,4), %ebx
     xchgl PT_EIP(%esp), %ebx
 
@@ -130,7 +130,7 @@ handle_sig:
     movl %eax, %fs:(%edx)
 
     movl current, %eax
-    movzbl SIGHANDLE_OFF(%eax), %ecx
+    movl SIGHANDLE_OFF(%eax), %ecx
     movl %ecx, %fs:4(%edx)
 
     movl PT_EAX(%esp), %eax

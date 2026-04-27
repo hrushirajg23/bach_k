@@ -293,3 +293,24 @@ void move_to_user_mode(void)
         ::: "eax", "memory"
     );
 }
+
+int sys_kill(int pid, int sig)
+{
+    //return do_kill(pid, sig);
+}
+
+int do_kill(int pid, int sig)
+{
+    int iCnt = 0;
+    for (iCnt = 0; iCnt < NR_TASKS; iCnt++) {
+        if (process_table[iCnt]->pid == pid) {
+            if (IS_FLAG(process_table[iCnt]->signal, sig)) {
+                printk("signal is already sent\n");
+                return 0;
+            }
+            SET_FLAG(process_table[iCnt]->signal, sig);
+            return 0;
+        }
+    }
+    return -1;
+}
